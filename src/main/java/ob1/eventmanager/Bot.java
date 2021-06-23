@@ -1,5 +1,6 @@
 package ob1.eventmanager;
 
+import ob1.eventmanager.command.CommandHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -29,13 +30,18 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        final SendMessage sendMessage = new SendMessage();
+        final String commandPrefix = "/";
 
+        SendMessage sendMessage = new SendMessage();
         final Message message = update.getMessage();
         final String text = message.getText();
-        sendMessage.setText(text);
-        sendMessage.setChatId(String.valueOf(message.getChatId()));
 
+        System.out.println(text);
+        if (text.startsWith(commandPrefix)) {
+            sendMessage = CommandHandler.parse(text);
+        }
+
+        sendMessage.setChatId(String.valueOf(message.getChatId()));
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {
