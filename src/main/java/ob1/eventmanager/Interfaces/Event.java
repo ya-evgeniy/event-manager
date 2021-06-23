@@ -1,7 +1,7 @@
 package ob1.eventmanager.Interfaces;
 
 public interface Event {
-    int getID();
+    long getID();
     String getName();
     String getDate();
     String getPlace();

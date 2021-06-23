@@ -1,7 +1,10 @@
 package ob1.eventmanager.Interfaces;
 
+import java.util.List;
+
 public interface Member {
-    int getID();
-    int getUserID();
-    int getEvenID();
+    long getID();
+    User getUser();
+    Event getEvent();
+    List<MemberAnswer> getAllAnswers();
 }
