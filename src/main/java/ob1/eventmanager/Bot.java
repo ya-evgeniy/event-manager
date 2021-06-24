@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -40,33 +41,56 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        final SendMessage sendMessage = new SendMessage();
+        if (update.hasMessage()) {
+            final SendMessage sendMessage = new SendMessage();
 
-        final Message message = update.getMessage();
-        final String text = message.getText();
-        sendMessage.setText(text);
-        sendMessage.setChatId(String.valueOf(message.getChatId()));
-
-
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-        inlineKeyboardButton1.setText("Тык");
-        inlineKeyboardButton1.setCallbackData("Button \"Тык\" has been pressed");
-        inlineKeyboardButton2.setText("Тык2");
-        inlineKeyboardButton2.setCallbackData("Button \"Тык2\" has been pressed");
-        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-        List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
-        keyboardButtonsRow1.add(inlineKeyboardButton1);
-        keyboardButtonsRow2.add(inlineKeyboardButton2);
-        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        rowList.add(keyboardButtonsRow1);
-        rowList.add(keyboardButtonsRow2);
-        inlineKeyboardMarkup.setKeyboard(rowList);
-        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+            final Message message = update.getMessage();
+            final String text = message.getText();
+            sendMessage.setText(text);
+            sendMessage.setChatId(String.valueOf(message.getChatId()));
 
 
-//
+            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+            List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+            List<InlineKeyboardButton> inlineKeyboardButtonList = new ArrayList<>();
+            InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+            InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+            inlineKeyboardButton1.setText("Все верно");
+            inlineKeyboardButton2.setText("Отменить");
+            inlineKeyboardButton1.setCallbackData("confirmation");
+            inlineKeyboardButton2.setCallbackData("cancellation");
+            inlineKeyboardButtonList.add(inlineKeyboardButton1);
+            inlineKeyboardButtonList.add(inlineKeyboardButton2);
+
+            inlineButtons.add(inlineKeyboardButtonList);
+
+            inlineKeyboardMarkup.setKeyboard(inlineButtons);
+
+            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        } else if (update.hasCallbackQuery()) {
+            final SendMessage sendMessage = new SendMessage();
+            final Message message = update.getCallbackQuery().getMessage();
+            sendMessage.setChatId(String.valueOf(message.getChatId()));
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            String data = callbackQuery.getData();
+            if (data.equals("confirmation")) {
+                sendMessage.setText("Мероприятние подтверждено!");
+            } else if (data.equals("cancellation")) {
+                sendMessage.setText("Мероприятие отменено!");
+            }
+
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        }
 //        final EventConfirmation eventConfirmation = new EventConfirmation();
 //
 //        final KeyboardRow keyboardButtons = eventConfirmation.showButtons();
@@ -81,11 +105,6 @@ public class Bot extends TelegramLongPollingBot {
 //                )
 //        ));
 
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
     }
 
 }
