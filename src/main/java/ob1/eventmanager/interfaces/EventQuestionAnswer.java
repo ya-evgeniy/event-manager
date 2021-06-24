@@ -1,7 +1,7 @@
-package ob1.eventmanager.Interfaces;
+package ob1.eventmanager.interfaces;
 
 public interface EventQuestionAnswer {
-    long getID();
+    long getId();
     EventQuestion getQuestion();
     String getAnswer();
 

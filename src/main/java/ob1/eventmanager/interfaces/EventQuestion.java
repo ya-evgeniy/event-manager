@@ -1,9 +1,9 @@
-package ob1.eventmanager.Interfaces;
+package ob1.eventmanager.interfaces;
 
 import java.util.List;
 
 public interface EventQuestion {
-    long getID();
+    long getId();
     Event getEvent();
     String getQuestion();
     List<MemberAnswer> getAllMemberAnswers();
