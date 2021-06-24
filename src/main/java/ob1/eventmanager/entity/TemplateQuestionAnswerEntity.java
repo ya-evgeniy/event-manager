@@ -15,10 +15,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Getter @Setter
+@Getter
 @Builder
 @AllArgsConstructor @NoArgsConstructor
-@Table(name = "templateQuestionAnswer")
+@Table(name = "template_question_answer")
 public class TemplateQuestionAnswerEntity {
 
     @Id
@@ -26,7 +26,7 @@ public class TemplateQuestionAnswerEntity {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "questionId", nullable = false)
+    @JoinColumn(name = "question_id", nullable = false)
     private TemplateQuestionEntity question;
 
     @Column(nullable = false)

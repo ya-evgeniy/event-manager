@@ -15,7 +15,7 @@ import javax.persistence.Table;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
 @Builder
 @AllArgsConstructor @NoArgsConstructor
 @Table(name = "category")
@@ -30,5 +30,4 @@ public class CategoryEntity {
 
     @OneToMany(mappedBy = "category")
     private List<TemplateEntity> templates;
-
 }

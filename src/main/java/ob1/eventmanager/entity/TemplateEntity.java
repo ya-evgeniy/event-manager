@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +16,7 @@ import javax.persistence.Table;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
 @Builder
 @AllArgsConstructor @NoArgsConstructor
 @Table(name = "template")
@@ -28,7 +27,7 @@ public class TemplateEntity {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "categoryId", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
 
     @Column(nullable = true)
@@ -36,5 +35,4 @@ public class TemplateEntity {
 
     @OneToMany(mappedBy = "template")
     private List<TemplateQuestionEntity> questions;
-
 }

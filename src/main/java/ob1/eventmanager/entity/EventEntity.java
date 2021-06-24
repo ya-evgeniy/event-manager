@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
 @Builder
 @AllArgsConstructor @NoArgsConstructor
 @Table(name = "event")
@@ -41,7 +41,7 @@ public class EventEntity {
     private boolean verified = false;
 
     @ManyToOne
-    @JoinColumn(name = "ownerId", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
 
     @OneToMany(mappedBy = "event")
