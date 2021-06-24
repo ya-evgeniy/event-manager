@@ -63,7 +63,19 @@ public class Bot extends TelegramLongPollingBot {
             inlineKeyboardButtonList.add(inlineKeyboardButton1);
             inlineKeyboardButtonList.add(inlineKeyboardButton2);
 
+            // ------
+            InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+            inlineKeyboardButton3.setText("Редактировать ✏️");
+            inlineKeyboardButton3.setCallbackData("edit");
+//            InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+//            inlineKeyboardButton3.setText("Редактировать2");
+            List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
+//
+            inlineKeyboardButtonList2.add(inlineKeyboardButton3);
+//            inlineKeyboardButtonList2.add(inlineKeyboardButton4);
+
             inlineButtons.add(inlineKeyboardButtonList);
+            inlineButtons.add(inlineKeyboardButtonList2);
 
             inlineKeyboardMarkup.setKeyboard(inlineButtons);
 
