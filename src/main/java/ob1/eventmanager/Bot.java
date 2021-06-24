@@ -1,14 +1,14 @@
 package ob1.eventmanager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -23,6 +23,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
 public class Bot extends TelegramLongPollingBot {
+
+    final Stack<DeleteMessage> deleteMessageList = new Stack<>();
+
 
     @Value("Event Confirmation")
     private String botUsername;
@@ -43,6 +46,14 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
+            final DeleteMessage deleteMessage = new DeleteMessage();
+            deleteMessage.setMessageId(update.getMessage().getMessageId());
+            deleteMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
+
+//            deleteMessageList.add(deleteMessage);
+            deleteMessageList.push(deleteMessage);
+
+
             final SendMessage sendMessage = new SendMessage();
 
             final Message message = update.getMessage();
@@ -63,16 +74,13 @@ public class Bot extends TelegramLongPollingBot {
             inlineKeyboardButtonList.add(inlineKeyboardButton1);
             inlineKeyboardButtonList.add(inlineKeyboardButton2);
 
-            // ------
+
             InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
             inlineKeyboardButton3.setText("Редактировать ✏️");
             inlineKeyboardButton3.setCallbackData("edit");
-//            InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
-//            inlineKeyboardButton3.setText("Редактировать2");
             List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
 //
             inlineKeyboardButtonList2.add(inlineKeyboardButton3);
-//            inlineKeyboardButtonList2.add(inlineKeyboardButton4);
 
             inlineButtons.add(inlineKeyboardButtonList);
             inlineButtons.add(inlineKeyboardButtonList2);
@@ -82,51 +90,69 @@ public class Bot extends TelegramLongPollingBot {
             sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 
             try {
-                execute(sendMessage);
+                Message msg = new Message();
+                msg = execute(sendMessage);
+                DeleteMessage deleteMessage1 = new DeleteMessage();
+                deleteMessage1.setMessageId(msg.getMessageId());
+                deleteMessage1.setChatId(String.valueOf(msg.getChatId()));
+                deleteMessageList.push(deleteMessage1);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
         } else if (update.hasCallbackQuery()) {
+
+            final DeleteMessage deleteMessage = new DeleteMessage();
+
             final EditMessageText editMessageText = new EditMessageText();
 
             final SendMessage sendMessage = new SendMessage();
             final Message message = update.getCallbackQuery().getMessage();
 
+
             editMessageText.setChatId(String.valueOf(message.getChatId()));
+            editMessageText.enableHtml(true);
 
             sendMessage.setChatId(String.valueOf(message.getChatId()));
             CallbackQuery callbackQuery = update.getCallbackQuery();
             String data = callbackQuery.getData();
             if (data.equals("confirmation")) {
-                sendMessage.setText("Мероприятние подтверждено!");
+
+                deleteMessage.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
+                deleteMessage.setChatId(String.valueOf(update.getCallbackQuery().getMessage().getChatId()));
+
+                sendMessage.setText("Мероприятие подтверждено!");
+
+
                 editMessageText.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
-                editMessageText.setText("Мероприятние подтверждено!");
+                editMessageText.setText(message.getText() + "\n<b>Мероприятие подтверждено!</b>");
+
             } else if (data.equals("cancellation")) {
                 sendMessage.setText("Мероприятие отменено!");
+
                 editMessageText.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
-                editMessageText.setText("Мероприятие отменено!");
+                editMessageText.setText(message.getText() + "\n<b>Мероприятие отменено!</b>");
             }
 
             try {
 //                execute(sendMessage);
+//                execute(editMessageText);
+//                execute(deleteMessage);
+                Stack<DeleteMessage> deleteExceptLast = new Stack<>();
+                while (!deleteMessageList.isEmpty()) {
+                    deleteExceptLast.push(deleteMessageList.pop());
+                }
+
+
+                while (deleteExceptLast.size() > 1) {
+                    execute(deleteExceptLast.pop());
+                }
+//                System.out.println(deleteMessageList);
                 execute(editMessageText);
+
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
         }
-//        final EventConfirmation eventConfirmation = new EventConfirmation();
-//
-//        final KeyboardRow keyboardButtons = eventConfirmation.showButtons();
-//        final KeyboardRow keyboardButtons = new KeyboardRow();
-//        keyboardButtons.add("всё верно ✔️");
-//        keyboardButtons.add("отменить");
-
-
-//        sendMessage.setReplyMarkup(new ReplyKeyboardMarkup(
-//                Arrays.asList(
-//                        keyboardButtons
-//                )
-//        ));
 
     }
 
