@@ -17,10 +17,10 @@ import javax.persistence.Table;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
 @Builder
 @AllArgsConstructor @NoArgsConstructor
-@Table(name = "eventQuestion")
+@Table(name = "event_question")
 public class EventQuestionEntity {
 
     @Id
@@ -28,7 +28,7 @@ public class EventQuestionEntity {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "eventId", nullable = false)
+    @JoinColumn(name = "event_id", nullable = false)
     private EventEntity event;
 
     @Column(nullable = false)

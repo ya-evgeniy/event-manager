@@ -17,10 +17,10 @@ import javax.persistence.Table;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
 @Builder
 @AllArgsConstructor @NoArgsConstructor
-@Table(name = "templateQuestion")
+@Table(name = "template_question")
 public class TemplateQuestionEntity {
 
     @Id
@@ -28,7 +28,7 @@ public class TemplateQuestionEntity {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "templateId", nullable = false)
+    @JoinColumn(name = "template_id", nullable = false)
     private TemplateEntity template;
 
     @Column(nullable = false)
