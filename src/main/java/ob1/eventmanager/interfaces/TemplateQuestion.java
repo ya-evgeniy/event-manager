@@ -1,9 +1,9 @@
-package ob1.eventmanager.Interfaces;
+package ob1.eventmanager.interfaces;
 
 import java.util.List;
 
 public interface TemplateQuestion {
-    long getID();
+    long getId();
     Template getTemplate();
     String getQuestion();
     List<TemplateQuestionAnswer> getAllAnswers();

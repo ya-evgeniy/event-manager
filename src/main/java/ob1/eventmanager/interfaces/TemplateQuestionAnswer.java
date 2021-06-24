@@ -1,7 +1,7 @@
-package ob1.eventmanager.Interfaces;
+package ob1.eventmanager.interfaces;
 
 public interface TemplateQuestionAnswer {
-    long getID();
+    long getId();
     TemplateQuestion getQuestion();
     String getAnswer();
 
