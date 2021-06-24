@@ -56,8 +56,8 @@ public class Bot extends TelegramLongPollingBot {
             List<InlineKeyboardButton> inlineKeyboardButtonList = new ArrayList<>();
             InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
             InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-            inlineKeyboardButton1.setText("Все верно");
-            inlineKeyboardButton2.setText("Отменить");
+            inlineKeyboardButton1.setText("Все верно ✅");
+            inlineKeyboardButton2.setText("Отменить ❌");
             inlineKeyboardButton1.setCallbackData("confirmation");
             inlineKeyboardButton2.setCallbackData("cancellation");
             inlineKeyboardButtonList.add(inlineKeyboardButton1);
@@ -96,6 +96,7 @@ public class Bot extends TelegramLongPollingBot {
             }
 
             try {
+//                execute(sendMessage);
                 execute(editMessageText);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
