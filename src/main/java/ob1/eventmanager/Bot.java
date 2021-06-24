@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -74,19 +75,28 @@ public class Bot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
         } else if (update.hasCallbackQuery()) {
+            final EditMessageText editMessageText = new EditMessageText();
+
             final SendMessage sendMessage = new SendMessage();
             final Message message = update.getCallbackQuery().getMessage();
+
+            editMessageText.setChatId(String.valueOf(message.getChatId()));
+
             sendMessage.setChatId(String.valueOf(message.getChatId()));
             CallbackQuery callbackQuery = update.getCallbackQuery();
             String data = callbackQuery.getData();
             if (data.equals("confirmation")) {
                 sendMessage.setText("Мероприятние подтверждено!");
+                editMessageText.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
+                editMessageText.setText("Мероприятние подтверждено!");
             } else if (data.equals("cancellation")) {
                 sendMessage.setText("Мероприятие отменено!");
+                editMessageText.setMessageId(update.getCallbackQuery().getMessage().getMessageId());
+                editMessageText.setText("Мероприятие отменено!");
             }
 
             try {
-                execute(sendMessage);
+                execute(editMessageText);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
