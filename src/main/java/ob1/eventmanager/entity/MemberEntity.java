@@ -16,7 +16,7 @@ import javax.persistence.Table;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
 @Builder
 @AllArgsConstructor @NoArgsConstructor
 @Table(name = "member")
@@ -27,11 +27,11 @@ public class MemberEntity {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name = "eventId", nullable = false)
+    @JoinColumn(name = "event_id", nullable = false)
     private EventEntity event;
 
     @OneToMany(mappedBy = "member")

@@ -15,10 +15,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Getter @Setter
+@Getter
 @Builder
 @AllArgsConstructor @NoArgsConstructor
-@Table(name = "eventQuestionAnswer")
+@Table(name = "event_question_answer")
 public class EventQuestionAnswerEntity {
 
     @Id
@@ -26,7 +26,7 @@ public class EventQuestionAnswerEntity {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "questionId", nullable = false)
+    @JoinColumn(name = "question_id", nullable = false)
     private EventQuestionEntity question;
 
     @Column(nullable = false)
