@@ -28,6 +28,9 @@ public class EventEntity {
     @GeneratedValue
     private long id;
 
+    @Column(nullable = false)
+    private long chatId;
+
     @Column(nullable = true)
     private String name;
 
