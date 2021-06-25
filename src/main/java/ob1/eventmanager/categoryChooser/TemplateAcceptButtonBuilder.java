@@ -1,4 +1,4 @@
-package ob1.eventmanager;
+package ob1.eventmanager.categoryChooser;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;

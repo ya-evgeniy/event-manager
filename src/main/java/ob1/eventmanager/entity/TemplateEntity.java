@@ -5,14 +5,9 @@ import lombok.Builder;
 import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.Hibernate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -33,6 +28,12 @@ public class TemplateEntity {
     @Column(nullable = true)
     private String name;
 
-    @OneToMany(mappedBy = "template")
+    @OneToMany(mappedBy = "template", fetch = FetchType.EAGER)
     private List<TemplateQuestionEntity> questions;
+
+
+    public List<TemplateQuestionEntity> getQuestions() {
+        Hibernate.initialize(questions);
+        return questions;
+    }
 }
