@@ -13,9 +13,11 @@ import ob1.eventmanager.repository.TemplateRepository;
 import ob1.eventmanager.service.TemplateService;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class TemplateServiceImpl implements TemplateService {
 
     @Autowired
