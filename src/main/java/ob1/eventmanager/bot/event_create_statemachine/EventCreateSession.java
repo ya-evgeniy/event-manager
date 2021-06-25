@@ -1,13 +1,15 @@
 package ob1.eventmanager.bot.event_create_statemachine;
 
-import ob1.eventmanager.bot.Bot;
+import ob1.eventmanager.bot.TelegramBot;
+import ob1.eventmanager.statemachine.event.EventEvents;
+import ob1.eventmanager.statemachine.event.EventStates;
 import org.springframework.statemachine.StateMachine;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 
 public class EventCreateSession {
-    private final EventCreateStateMachineListener listener;
-    private final Bot bot;
+//    private final EventCreateStateMachineListener listener;
+    private final TelegramBot bot;
 
     private static String START_COMMAND = "/start";
     private static String CREATE_COMMAND = "/create";
@@ -16,15 +18,15 @@ public class EventCreateSession {
 
     private final String chatId;
 
-    public EventCreateSession(String id, StateMachine<EventStates, EventEvents> stateMachine, Bot bot) {
+    public EventCreateSession(String id, StateMachine<EventStates, EventEvents> stateMachine, TelegramBot bot) {
         this.chatId = id;
         this.stateMachine = stateMachine;
         this.bot = bot;
-        this.listener = EventCreateStateMachineListenerFactory.create();
-        this.listener.setStateMachine(stateMachine);
-        this.listener.setBot(bot);
-        this.listener.setChatId(chatId);
-        stateMachine.addStateListener(listener);
+//        this.listener = EventCreateStateMachineListenerFactory.create();
+//        this.listener.setStateMachine(stateMachine);
+//        this.listener.setBot(bot);
+//        this.listener.setChatId(chatId);
+//        stateMachine.addStateListener(listener);
 
     }
 
@@ -41,7 +43,7 @@ public class EventCreateSession {
             stateMachine.sendEvent(EventEvents.STARTED);
             System.out.println(stateMachine.getState().toString());
         } else {
-            listener.receive(message);
+//            listener.receive(message);
         }
     }
 

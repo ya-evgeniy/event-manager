@@ -1,12 +1,12 @@
 package ob1.eventmanager.bot.event_create_statemachine;
 
-import ob1.eventmanager.bot.Bot;
+import ob1.eventmanager.bot.TelegramBot;
+import ob1.eventmanager.statemachine.event.EventEvents;
+import ob1.eventmanager.statemachine.event.EventStates;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.listener.StateMachineListenerAdapter;
 import org.springframework.statemachine.state.State;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 //@Component
@@ -17,7 +17,7 @@ public class EventCreateStateMachineListener extends StateMachineListenerAdapter
     private Date dateTime;
     private StateMachine<EventStates, EventEvents> stateMachine;
 
-    private Bot bot;
+    private TelegramBot bot;
 
     private String currentState = "NONE";
     private String chatId;
@@ -30,7 +30,7 @@ public class EventCreateStateMachineListener extends StateMachineListenerAdapter
         this.stateMachine = stateMachine;
     }
 
-    public void setBot(Bot bot) {
+    public void setBot(TelegramBot bot) {
         this.bot = bot;
     }
 
