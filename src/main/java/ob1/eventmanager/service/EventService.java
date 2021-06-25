@@ -15,6 +15,10 @@ public interface EventService {
 
     void setEventPlace(EventEntity event, String place);
 
+    void setEventCategory(EventEntity event, String category);
+
+    void setEventTemplate(EventEntity event, String template);
+
     void verifyEvent(EventEntity event);
 
 }
