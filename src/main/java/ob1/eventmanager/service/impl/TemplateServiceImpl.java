@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TemplateServiceImpl implements TemplateService {
@@ -51,6 +52,16 @@ public class TemplateServiceImpl implements TemplateService {
                         .build());
             }
         }
+    }
+
+    @Override
+    public Optional<TemplateEntity> getTemplateById(long id) {
+        return templateRepository.findById(id);
+    }
+
+    @Override
+    public Optional<TemplateEntity> getTemplateByName(String name) {
+        return templateRepository.findFirstByNameLike(name);
     }
 
 }

@@ -11,6 +11,6 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
 
     Optional<CategoryEntity> getFirstById(long id);
 
-    Optional<CategoryEntity> getFirstByNameLike(String name);
+    Optional<CategoryEntity> findFirstByNameLike(String name);
 
 }
