@@ -4,14 +4,11 @@ import ob1.eventmanager.entity.EventEntity;
 import ob1.eventmanager.entity.UserEntity;
 import ob1.eventmanager.service.EventService;
 import ob1.eventmanager.service.UserService;
-import ob1.eventmanager.statemachine.event.EventEvents;
+import ob1.eventmanager.statemachine.MessageStateMachine;
+import ob1.eventmanager.statemachine.MessageStateMachineFactory;
 import ob1.eventmanager.statemachine.event.EventStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.messaging.support.GenericMessage;
-import org.springframework.statemachine.StateMachine;
-import org.springframework.statemachine.config.StateMachineFactory;
-import org.springframework.statemachine.state.State;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -35,7 +32,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private String botToken;
 
     @Autowired
-    private StateMachineFactory<EventStates, EventEvents> stateMachineFactory;
+    private MessageStateMachineFactory<EventStates> eventStatesMachineFactory;
 
     @Autowired
     private EventService eventService;
@@ -43,7 +40,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private UserService userService;
 
-    private final Map<String, StateMachine<EventStates, EventEvents>> eventStateMachines = new HashMap<>();
+    private final Map<String, MessageStateMachine<EventStates>> eventStateMachines = new HashMap<>();
 
     @Override
     public String getBotUsername() {
@@ -80,29 +77,15 @@ public class TelegramBot extends TelegramLongPollingBot {
         headers.put("userId", message.getFrom().getId());
         headers.put("messageId", message.getMessageId());
 
-        StateMachine<EventStates, EventEvents> eventStateMachine = eventStateMachines.get(stringChatId);
-        if (eventStateMachine == null && message.getGroupchatCreated() != null && message.getGroupchatCreated()) {
+        MessageStateMachine<EventStates> machine = eventStateMachines.get(stringChatId);
+        if (machine == null && message.getGroupchatCreated() != null && message.getGroupchatCreated()) {
             final EventEntity event = eventService.newEvent(user, message.getChatId());
             headers.put("event", event);
 
-            eventStateMachine = stateMachineFactory.getStateMachine(stringChatId);
-            eventStateMachine.start();
+            machine = eventStatesMachineFactory.create(stringChatId, EventStates.NEW);
+            eventStateMachines.put(stringChatId, machine);
 
-            eventStateMachines.put(stringChatId, eventStateMachine);
-
-            send("Привет! Я ваш личный менеджер мероприятий.\n Мои основные задачи:\n " +
-                            "- хранить данные о вашем мероприятии;\n" +
-                            "- собирать статистику о предпочтениях гостей;\n" +
-                            "- напоминать о предстоящем событии\n" +
-                            "- всегда держать в курсе текущего положения дел.\n" +
-                            "Для того, чтобы ввести данные о своем мероприятии, воспользуйтесь командой /create",
-                    stringChatId
-            );
-
-            eventStateMachine.sendEvent(new GenericMessage<>(
-                    EventEvents.STARTED,
-                    headers
-            ));
+            machine.handle(headers);
             return;
         }
 
@@ -112,15 +95,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         final EventEntity event = eventService.getEvent(message.getChatId());
         headers.put("event", event);
 
-        if (eventStateMachine != null) {
-            final State<EventStates, EventEvents> state = eventStateMachine.getState();
-            final EventEvents stateEvent = state.getId().getEvent();
-            if (stateEvent != null) {
-                eventStateMachine.sendEvent(new GenericMessage<>(
-                        stateEvent,
-                        headers
-                ));
-            }
+        if (machine != null) {
+            machine.handle(headers);
         }
     }
 
@@ -136,16 +112,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         headers.put("callbackData", callbackQuery.getData());
         headers.put("messageId", callbackQuery.getMessage().getMessageId());
 
-        StateMachine<EventStates, EventEvents> eventStateMachine = eventStateMachines.get(stringChatId);
-        if (eventStateMachine != null) {
-            final State<EventStates, EventEvents> state = eventStateMachine.getState();
-            final EventEvents stateEvent = state.getId().getEvent();
-            if (stateEvent != null) {
-                eventStateMachine.sendEvent(new GenericMessage<>(
-                        stateEvent,
-                        headers
-                ));
-            }
+        MessageStateMachine<EventStates> machine = eventStateMachines.get(stringChatId);
+        if (machine != null) {
+            machine.handle(headers);
         }
     }
 
