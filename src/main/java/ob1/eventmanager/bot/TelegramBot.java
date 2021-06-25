@@ -51,8 +51,13 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         final String stringChatId = String.valueOf(message.getChat().getId());
 
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("text", message.getText());
+        headers.put("chatId", stringChatId);
+        headers.put("userId", message.getFrom().getId());
+
         StateMachine<EventStates, EventEvents> eventStateMachine = eventStateMachines.get(stringChatId);
-        if (eventStateMachine == null && message.getGroupchatCreated()) { // FIXME NullPointer???: when deleting chat
+        if (eventStateMachine == null && message.getGroupchatCreated() != null && message.getGroupchatCreated()) {
             eventStateMachine = stateMachineFactory.getStateMachine(stringChatId);
             eventStateMachine.start();
 
@@ -67,9 +72,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                     stringChatId
             );
 
-            Map<String, Object> headers = new HashMap<>();
-            headers.put("text", message.getText());
-
             eventStateMachine.sendEvent(new GenericMessage<>(
                     EventEvents.STARTED,
                     headers
@@ -77,13 +79,12 @@ public class TelegramBot extends TelegramLongPollingBot {
             return;
         }
 
+        if (message.getText() == null || message.getText().isBlank()) return;
+
         if (eventStateMachine != null) {
             final State<EventStates, EventEvents> state = eventStateMachine.getState();
             final EventEvents event = state.getId().getEvent();
             if (event != null) {
-                Map<String, Object> headers = new HashMap<>();
-                headers.put("text", message.getText());
-
                 eventStateMachine.sendEvent(new GenericMessage<>(
                         event,
                         headers
