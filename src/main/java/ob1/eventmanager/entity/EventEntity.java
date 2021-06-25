@@ -44,6 +44,14 @@ public class EventEntity {
     private boolean verified = false;
 
     @ManyToOne
+    @JoinColumn(name = "category_id", nullable = true)
+    private CategoryEntity category;
+
+    @ManyToOne
+    @JoinColumn(name = "template_id", nullable = true)
+    private TemplateEntity template;
+
+    @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
 
