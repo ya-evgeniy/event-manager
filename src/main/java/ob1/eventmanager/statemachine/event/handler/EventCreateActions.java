@@ -1,4 +1,4 @@
-package ob1.eventmanager.statemachine.event.action;
+package ob1.eventmanager.statemachine.event.handler;
 
 import ob1.eventmanager.statemachine.event.EventEvents;
 import ob1.eventmanager.statemachine.event.EventStates;

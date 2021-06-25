@@ -5,9 +5,9 @@ import ob1.eventmanager.entity.UserEntity;
 
 public interface EventService {
 
-    EventEntity newEvent(UserEntity user, int chatId);
+    EventEntity newEvent(UserEntity user, long chatId);
 
-    EventEntity getEvent(int chatId);
+    EventEntity getEvent(long chatId);
 
     void setEventName(EventEntity event, String name);
 

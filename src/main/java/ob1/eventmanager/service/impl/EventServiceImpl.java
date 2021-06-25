@@ -8,10 +8,12 @@ import ob1.eventmanager.repository.EventRepository;
 import ob1.eventmanager.service.EventService;
 import ob1.eventmanager.utils.LocalDateParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Service
 public class EventServiceImpl implements EventService {
 
     @Autowired
@@ -21,7 +23,7 @@ public class EventServiceImpl implements EventService {
     private LocalDateParser parser;
 
     @Override
-    public EventEntity newEvent(UserEntity user, int chatId) {
+    public EventEntity newEvent(UserEntity user, long chatId) {
         final Optional<EventEntity> optEvent = eventRepository.getByChatId(chatId);
         if (optEvent.isPresent()) {
             throw new EventAlreadyExistsException(String.format("Event with chat id '%s' already exists", chatId));
@@ -36,7 +38,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventEntity getEvent(int chatId) {
+    public EventEntity getEvent(long chatId) {
         return eventRepository.getByChatId(chatId).orElseThrow(
                 () -> new EventNotFoundException(String.format("Event with chat id '%s' not found", chatId))
         );
