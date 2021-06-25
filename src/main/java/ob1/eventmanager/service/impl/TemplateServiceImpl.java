@@ -15,6 +15,7 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TemplateServiceImpl implements TemplateService {
 
@@ -49,6 +50,16 @@ public class TemplateServiceImpl implements TemplateService {
                         .build());
             }
         }
+    }
+
+    @Override
+    public Optional<TemplateEntity> getTemplateById(long id) {
+        return templateRepository.findById(id);
+    }
+
+    @Override
+    public Optional<TemplateEntity> getTemplateByName(String name) {
+        return templateRepository.findFirstByNameLike(name);
     }
 
 }

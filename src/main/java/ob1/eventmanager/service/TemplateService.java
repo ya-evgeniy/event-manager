@@ -5,11 +5,16 @@ import ob1.eventmanager.entity.EventEntity;
 import ob1.eventmanager.entity.TemplateEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TemplateService {
 
     List<TemplateEntity> getTemplatesByCategory(CategoryEntity category);
 
     void copyTemplateToEvent(TemplateEntity template, EventEntity event);
+
+    Optional<TemplateEntity> getTemplateById(long id);
+
+    Optional<TemplateEntity> getTemplateByName(String name);
 
 }
