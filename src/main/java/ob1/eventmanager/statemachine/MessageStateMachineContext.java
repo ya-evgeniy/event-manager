@@ -11,6 +11,8 @@ public class MessageStateMachineContext<T> {
 
     private final Map<String, Object> headers;
 
+    private final T currentState;
+
     private final T previousState;
 
     private T nextState;

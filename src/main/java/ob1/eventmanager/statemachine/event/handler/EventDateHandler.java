@@ -39,7 +39,7 @@ public class EventDateHandler implements MessageStateMachineHandler<EventStates>
             }
         }
         else {
-            throw new UnsupportedOperationException(previousState.name() + " -> DATE");
+            throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());
         }
     }
 

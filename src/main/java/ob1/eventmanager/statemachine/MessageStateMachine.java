@@ -21,14 +21,13 @@ public class MessageStateMachine<T> {
     public void handle(Map<String, Object> headers) {
         MessageStateMachineHandler<T> handler = stateHandlers.get(this.state);
         while (handler != null) {
-            final MessageStateMachineContext<T> context = new MessageStateMachineContext<>(headers, this.previousState, null);
+            final MessageStateMachineContext<T> context = new MessageStateMachineContext<>(headers, this.state, this.previousState, null);
             handler.handle(context);
 
             final T nextState = context.getNextState();
+            previousState = this.state;
             if (nextState != null) {
-                previousState = this.state;
                 this.state = nextState;
-
                 handler = stateHandlers.get(this.state);
             }
         }

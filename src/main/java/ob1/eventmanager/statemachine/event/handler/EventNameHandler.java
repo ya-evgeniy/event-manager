@@ -34,7 +34,7 @@ public class EventNameHandler implements MessageStateMachineHandler<EventStates>
             bot.send(text + " - отличное название!", chatId);
         }
         else {
-            throw new UnsupportedOperationException(previousState.name() + " -> NAME");
+            throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());
         }
     }
 
