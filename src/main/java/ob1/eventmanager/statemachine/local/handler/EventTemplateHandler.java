@@ -48,7 +48,7 @@ public class EventTemplateHandler implements MessageStateMachineHandler<LocalCha
         final LocalChatStates previousState = context.getPreviousState();
 
 
-        if (previousState == LocalChatStates.CATEGORY || previousState == LocalChatStates.TEMPLATE_QUESTIONS) {
+        if (previousState == LocalChatStates.EVENT_CATEGORY || previousState == LocalChatStates.EVENT_TEMPLATE_QUESTION) {
             final CategoryEntity category = event.getCategory();
 
             final EditMessageText editMessage = new EditMessageText();
@@ -62,10 +62,10 @@ public class EventTemplateHandler implements MessageStateMachineHandler<LocalCha
             editMessage.setReplyMarkup(templateKeyboardMarkup);
 
             bot.send(editMessage);
-        } else if (previousState == LocalChatStates.TEMPLATE) {
+        } else if (previousState == LocalChatStates.EVENT_TEMPLATE) {
 
             if (Objects.equals(text, "goBackToCategory") || Objects.equals(callbackQuery, "goBackToCategory")) {
-                context.setNextState(LocalChatStates.CATEGORY);
+                context.setNextState(LocalChatStates.EVENT_CATEGORY);
                 return;
             }
 
@@ -75,7 +75,7 @@ public class EventTemplateHandler implements MessageStateMachineHandler<LocalCha
                     event = eventService.setEventTemplate(event, text);
                     context.getHeaders().put("event", event);
 
-                    context.setNextState(LocalChatStates.TEMPLATE_QUESTIONS);
+                    context.setNextState(LocalChatStates.EVENT_TEMPLATE_QUESTION);
                 } catch (TemplateNotFoundException e) {
                     final EditMessageText editMessage = new EditMessageText();
                     editMessage.setMessageId(messageId);
@@ -87,14 +87,14 @@ public class EventTemplateHandler implements MessageStateMachineHandler<LocalCha
 
             if (callbackQuery != null) {
                 if (callbackQuery.equals("goBackToTemplate")) {
-                    context.setNextState(LocalChatStates.CATEGORY);
+                    context.setNextState(LocalChatStates.EVENT_CATEGORY);
                     return;
                 }
                 try {
                     event = eventService.setEventTemplate(event, callbackQuery);
                     context.getHeaders().put("event", event);
 
-                    context.setNextState(LocalChatStates.TEMPLATE_QUESTIONS);
+                    context.setNextState(LocalChatStates.EVENT_TEMPLATE_QUESTION);
                 } catch (TemplateNotFoundException e) {
                     final EditMessageText editMessage = new EditMessageText();
                     editMessage.setMessageId(messageId);

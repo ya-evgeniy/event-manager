@@ -32,7 +32,7 @@ public class EventCreateConfirmationHandler implements MessageStateMachineHandle
 
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.TEMPLATE_QUESTIONS) {
+        if (previousState == LocalChatStates.EVENT_TEMPLATE_QUESTION) {
             final EditMessageText editMessage = new EditMessageText();
             editMessage.setChatId(chatId);
             editMessage.setMessageId(messageId);
@@ -61,7 +61,7 @@ public class EventCreateConfirmationHandler implements MessageStateMachineHandle
 
             bot.send(sendMessage);
 
-        } else if (previousState == LocalChatStates.CREATE_CONFIRM) {
+        } else if (previousState == LocalChatStates.EVENT_CONFIRM) {
             if (callbackQuery.equals("confirm")) {
 
                 final EditMessageText editMessage = new EditMessageText();
@@ -69,7 +69,7 @@ public class EventCreateConfirmationHandler implements MessageStateMachineHandle
                 editMessage.setChatId(chatId);
                 editMessage.setText("Мероприятие подтверждено! Начинайте приглашать людей в чат!");
                 bot.send(editMessage);
-                context.setNextState(LocalChatStates.LISTEN_MEMBERS);
+                context.setNextState(LocalChatStates.EVENT_WAIT_INVITE);
 
             } else if (callbackQuery.equals("cancel")) {
                 final EditMessageText editMessage = new EditMessageText();
@@ -77,7 +77,7 @@ public class EventCreateConfirmationHandler implements MessageStateMachineHandle
                 editMessage.setChatId(chatId);
                 editMessage.setText("Мероприятие отменено!");
                 bot.send(editMessage);
-                context.setNextState(LocalChatStates.LEAVE_FROM_CHAT);
+//                context.setNextState(LocalChatStates.LEAVE_FROM_CHAT);FIXME delete event
             } else if (callbackQuery.equals("edit")) {
                 throw new UnsupportedOperationException("not impl yet");
             }

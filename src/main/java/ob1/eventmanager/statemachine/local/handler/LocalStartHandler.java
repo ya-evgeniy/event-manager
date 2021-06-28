@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("eventNewHandler")
-public class EventNewHandler implements MessageStateMachineHandler<LocalChatStates> {
+public class LocalStartHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
     private TelegramBot bot;
@@ -29,7 +29,7 @@ public class EventNewHandler implements MessageStateMachineHandler<LocalChatStat
                             "Для того, чтобы ввести данные о своем мероприятии, воспользуйтесь командой /create",
                     chatId
             );
-            context.setNextState(LocalChatStates.NAME);
+            context.setNextState(LocalChatStates.WAIT_COMMANDS);// FIXME: 28.06.2021 decide what to do
         }
         else {
             throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());

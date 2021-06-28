@@ -39,7 +39,7 @@ public class EventTemplateQuestionsHandler implements MessageStateMachineHandler
 
         final LocalChatStates previousState = context.getPreviousState();
 
-        if (previousState == LocalChatStates.TEMPLATE) {
+        if (previousState == LocalChatStates.EVENT_TEMPLATE) {
             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
             List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
 
@@ -80,16 +80,16 @@ public class EventTemplateQuestionsHandler implements MessageStateMachineHandler
             editMessage.setText(str.toString());
             editMessage.setReplyMarkup(inlineKeyboardMarkup);
             bot.send(editMessage);
-        } else if (previousState == LocalChatStates.TEMPLATE_QUESTIONS) {
+        } else if (previousState == LocalChatStates.EVENT_TEMPLATE_QUESTION) {
             final String callbackData = context.get("callbackData");
             if (callbackData.equals("cancel")) {
-                context.setNextState(LocalChatStates.TEMPLATE);
+                context.setNextState(LocalChatStates.EVENT_TEMPLATE);
             }
             else if (callbackData.equals("success")) {
                 event = templateService.copyTemplateToEvent(event.getTemplate(), event);
                 context.getHeaders().put("event", event);
 
-                context.setNextState(LocalChatStates.CREATE_CONFIRM);
+                context.setNextState(LocalChatStates.EVENT_CONFIRM);
             }
             else if (callbackData.equals("edit")) {
                 throw new UnsupportedOperationException("edit not implemented"); //TODO

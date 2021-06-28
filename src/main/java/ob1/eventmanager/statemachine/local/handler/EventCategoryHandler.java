@@ -37,19 +37,19 @@ public class EventCategoryHandler implements MessageStateMachineHandler<LocalCha
         final EditMessageText editMessage = new EditMessageText();
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.PLACE) {
+        if (previousState == LocalChatStates.EVENT_PLACE) {
             final SendMessage sendMessage = new SendMessage();
             sendMessage.setText("Выберите категорию, к которой относится ваше мероприятие:");
             sendMessage.setChatId(chatId);
             InlineKeyboardMarkup categoryKeyboardMarkup = new CategoryButtonBuilder().buildCategoryButtons(categoryService.getCategories());
             sendMessage.setReplyMarkup(categoryKeyboardMarkup);
             bot.send(sendMessage);
-        } else if (previousState == LocalChatStates.CATEGORY) {
+        } else if (previousState == LocalChatStates.EVENT_CATEGORY) {
             final String callbackData = context.get("callbackData");
             try {
                 event = eventService.setEventCategory(event, callbackData);
                 context.getHeaders().put("event", event);
-                context.setNextState(LocalChatStates.TEMPLATE);
+                context.setNextState(LocalChatStates.EVENT_TEMPLATE);
             } catch (CategoryNotFoundException e) {
                 editMessage.setMessageId(context.get("messageId"));
                 editMessage.setChatId(chatId);
@@ -57,7 +57,7 @@ public class EventCategoryHandler implements MessageStateMachineHandler<LocalCha
                 bot.send(editMessage);
             }
 
-        } else if (previousState == LocalChatStates.TEMPLATE) {
+        } else if (previousState == LocalChatStates.EVENT_TEMPLATE) {
             editMessage.setText("Выберите категорию, к которой относится ваше мероприятие:");
             editMessage.setChatId(chatId);
             editMessage.setMessageId(context.get("messageId"));

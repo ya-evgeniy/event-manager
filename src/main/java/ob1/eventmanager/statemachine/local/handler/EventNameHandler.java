@@ -27,14 +27,14 @@ public class EventNameHandler implements MessageStateMachineHandler<LocalChatSta
         final String chatId = context.get("chatId");
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.NEW) {
+        if (previousState == LocalChatStates.EVENT_CREATE) {
             bot.send("Что ж, приступим.\nВведите название вашего мероприятия.", chatId);
         }
-        else if (previousState == LocalChatStates.NAME) {
+        else if (previousState == LocalChatStates.EVENT_NAME) {
             event = eventService.setEventName(event, text);
             context.getHeaders().put("event", event);
 
-            context.setNextState(LocalChatStates.DATE);
+            context.setNextState(LocalChatStates.EVENT_DATE);
             bot.send(text + " - отличное название!", chatId);
         }
         else {
