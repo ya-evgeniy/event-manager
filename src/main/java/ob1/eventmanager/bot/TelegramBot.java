@@ -16,7 +16,6 @@ import org.telegram.telegrambots.meta.api.methods.groupadministration.LeaveChat;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -43,11 +42,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private UserService userService;
 
-    @Autowired @Qualifier("telegramGroupCallbackQueryUpdateHandler")
-    private TelegramUpdateHandler groupCallbackQueryUpdateHandler;
-
-    @Autowired @Qualifier("telegramGroupMessageUpdateHandler")
-    private TelegramUpdateHandler groupMessageUpdateHandler;
+    @Autowired @Qualifier("telegramGroupUpdateHandler")
+    private TelegramUpdateHandler groupUpdateHandler;
 
     @Autowired @Qualifier("telegramLocalCallbackQueryUpdateHandler")
     private TelegramUpdateHandler localCallbackQueryUpdateHandler;
@@ -75,12 +71,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 || update.hasCallbackQuery() && update.getCallbackQuery().getMessage().getChat().isGroupChat();
 
         if (isGroup) {
-            if (update.hasMessage()) {
-                groupMessageUpdateHandler.handle(update);
-            }
-            else if (update.hasCallbackQuery()) {
-                groupCallbackQueryUpdateHandler.handle(update);
-            }
+            groupUpdateHandler.handle(update);
         }
         else {
             if (update.hasMessage()) {
