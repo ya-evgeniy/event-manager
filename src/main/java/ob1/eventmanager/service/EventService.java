@@ -5,20 +5,20 @@ import ob1.eventmanager.entity.UserEntity;
 
 public interface EventService {
 
-    EventEntity newEvent(UserEntity user, int chatId);
+    EventEntity newEvent(UserEntity user, long chatId);
 
-    EventEntity getEvent(int chatId);
+    EventEntity getEvent(long chatId);
 
-    void setEventName(EventEntity event, String name);
+    EventEntity setEventName(EventEntity event, String name);
 
-    void setEventDate(EventEntity event, String date);
+    EventEntity setEventDate(EventEntity event, String date);
 
-    void setEventPlace(EventEntity event, String place);
+    EventEntity setEventPlace(EventEntity event, String place);
 
-    void setEventCategory(EventEntity event, String category);
+    EventEntity setEventCategory(EventEntity event, String category);
 
-    void setEventTemplate(EventEntity event, String template);
+    EventEntity setEventTemplate(EventEntity event, String template);
 
-    void verifyEvent(EventEntity event);
+    EventEntity verifyEvent(EventEntity event);
 
 }

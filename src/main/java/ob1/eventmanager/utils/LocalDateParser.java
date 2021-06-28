@@ -26,8 +26,8 @@ public class LocalDateParser {
         final String m = matcher.group("m");
         final String y = matcher.group("y");
 
-        final String hrs = matcher.group("y");
-        final String mnt = matcher.group("y");
+        final String hrs = matcher.group("hrs");
+        final String mnt = matcher.group("mnt");
 
         try {
             if (y != null) date = date.with(ChronoField.YEAR, Integer.parseInt(y));
@@ -37,7 +37,7 @@ public class LocalDateParser {
                     .withSecond(Integer.parseInt(mnt));
         }
         catch (DateTimeException e) {
-            throw new IncorrectDateFormatException(str);
+            throw new IncorrectDateFormatException(str, e);
         }
     }
 

@@ -10,6 +10,7 @@ import ob1.eventmanager.entity.TemplateQuestionEntity;
 import ob1.eventmanager.repository.EventQuestionAnswerRepository;
 import ob1.eventmanager.repository.EventQuestionRepository;
 import ob1.eventmanager.repository.TemplateRepository;
+import ob1.eventmanager.service.EventService;
 import ob1.eventmanager.service.TemplateService;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class TemplateServiceImpl implements TemplateService {
     @Autowired
     private EventQuestionAnswerRepository eventQuestionAnswerRepository;
 
+    @Autowired
+    private EventService eventService;
+
     @Override
     public List<TemplateEntity> getTemplatesByCategory(CategoryEntity category) {
         Hibernate.initialize(category.getTemplates());
@@ -37,14 +41,13 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public void copyTemplateToEvent(TemplateEntity template, EventEntity event) {
+    public EventEntity copyTemplateToEvent(TemplateEntity template, EventEntity event) {
         for (TemplateQuestionEntity question : template.getQuestions()) {
             final EventQuestionEntity eventQuestion = eventQuestionRepository.save(EventQuestionEntity.builder()
                     .event(event)
                     .question(question.getQuestion())
                     .build());
 
-            Hibernate.initialize(question.getAnswers());
             for (TemplateQuestionAnswerEntity answer : question.getAnswers()) {
                 eventQuestionAnswerRepository.save(EventQuestionAnswerEntity.builder()
                         .question(eventQuestion)
@@ -52,6 +55,8 @@ public class TemplateServiceImpl implements TemplateService {
                         .build());
             }
         }
+
+        return eventService.getEvent(event.getChatId());
     }
 
     @Override

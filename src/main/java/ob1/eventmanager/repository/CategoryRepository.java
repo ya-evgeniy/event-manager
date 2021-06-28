@@ -9,6 +9,8 @@ import java.util.Optional;
 @Repository
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
 
+    Optional<CategoryEntity> getFirstById(long id);
+
     Optional<CategoryEntity> findFirstByNameLike(String name);
 
 }

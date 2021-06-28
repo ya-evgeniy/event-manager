@@ -17,7 +17,7 @@ public class TemplateButtonBuilder {
             InlineKeyboardButton templateButton = new InlineKeyboardButton();
 
             templateButton.setText(template.getName());
-            templateButton.setCallbackData("temp" + template.getId());
+            templateButton.setCallbackData("tem" + template.getId());
 
             lineButton.add(templateButton);
             inlineButtons.add(lineButton);
@@ -27,7 +27,7 @@ public class TemplateButtonBuilder {
         InlineKeyboardButton backButton = new InlineKeyboardButton();
 
         backButton.setText("<<--");
-        backButton.setCallbackData("backToCategoryList");
+        backButton.setCallbackData("goBackToCategory");
 
         backLineButton.add(backButton);
         inlineButtons.add(backLineButton);

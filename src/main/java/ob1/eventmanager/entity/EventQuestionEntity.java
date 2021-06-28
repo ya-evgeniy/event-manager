@@ -2,13 +2,16 @@ package ob1.eventmanager.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -24,7 +27,7 @@ import java.util.List;
 public class EventQuestionEntity {
 
     @Id
-    @Generated
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @ManyToOne
@@ -34,7 +37,8 @@ public class EventQuestionEntity {
     @Column(nullable = false)
     private String question;
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     private List<EventQuestionAnswerEntity> answers;
 
 }
