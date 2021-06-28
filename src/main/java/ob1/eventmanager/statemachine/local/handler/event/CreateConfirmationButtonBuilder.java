@@ -1,4 +1,4 @@
-package ob1.eventmanager.statemachine.local.handler;
+package ob1.eventmanager.statemachine.local.handler.event;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;

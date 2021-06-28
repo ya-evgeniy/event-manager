@@ -1,4 +1,4 @@
-package ob1.eventmanager.statemachine.local.handler;
+package ob1.eventmanager.statemachine.local.handler.event;
 
 import ob1.eventmanager.bot.TelegramBot;
 import ob1.eventmanager.categoryChooser.TemplateButtonBuilder;
