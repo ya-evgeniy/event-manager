@@ -41,7 +41,7 @@ public class EventTemplateQuestionsHandler implements MessageStateMachineHandler
 
         if (previousState == LocalChatStates.EVENT_TEMPLATE) {
             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-            List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
+            List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();//fixme кнопки по нормальному сделать
 
             List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
             InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
