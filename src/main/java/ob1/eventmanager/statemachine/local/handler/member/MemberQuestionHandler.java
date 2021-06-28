@@ -1,6 +1,7 @@
 package ob1.eventmanager.statemachine.local.handler.member;
 
 import ob1.eventmanager.bot.TelegramBot;
+import ob1.eventmanager.entity.EventQuestionEntity;
 import ob1.eventmanager.entity.MemberEntity;
 import ob1.eventmanager.service.EventService;
 import ob1.eventmanager.service.MemberAnswerService;
@@ -12,34 +13,43 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
-@Component("memberPlaceEditHandler")
-public class MemberPlaceEditHandler implements MessageStateMachineHandler<LocalChatStates> {
+import java.util.List;
+
+@Component("memberQuestionHandler")
+public class MemberQuestionHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
     private TelegramBot bot;
     @Autowired
     private MemberAnswerService memberAnswerService;
+    @Autowired
+    private EventService eventService;
+
+    private int prevQuestionIndex = 0;
 
     @Override
     public void handle(MessageStateMachineContext<LocalChatStates> context) {
-
         System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
-
         final String text = context.get("text");
         final String chatId = context.get("chatId");
+        final String callbackQuery = context.get("callbackData");
+        final int messageId = context.get("messageId");
         final MemberEntity member = new MemberEntity();//fixme добавить getMemberEntity()
+        List<EventQuestionEntity> questions = eventService.getEvent(Long.parseLong(chatId)).getQuestions();
+        final String currentQuestion = questions.get(prevQuestionIndex).getQuestion();
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.MEMBER_PLACE_EDIT) {
-            bot.send("Введите название места, которое вас устраивает", chatId);
-            memberAnswerService.setAnswer(member, text);//TODO
-            bot.send("Окей, ваше пожелание по месту " + text + " будет обязательно учтено организатором.", chatId);
-            context.setNextState(LocalChatStates.MEMBER_DATE);
 
+        if (previousState == LocalChatStates.MEMBER_DATE) {
+            bot.send(currentQuestion,chatId);
+            prevQuestionIndex+=1;
+            //todo добавить вывод вопросов
+
+        } else if (previousState == LocalChatStates.MEMBER_QUESTION) {
+
+                context.setNextState(LocalChatStates.MEMBER_CONFIRM);
         } else {
             throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());
         }
-
     }
-
 }
