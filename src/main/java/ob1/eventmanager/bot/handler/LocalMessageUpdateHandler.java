@@ -1,16 +1,19 @@
 package ob1.eventmanager.bot.handler;
 
 import ob1.eventmanager.bot.TelegramUpdateHandler;
+import ob1.eventmanager.bot.command.LocalCommandHandler;
 import ob1.eventmanager.service.MessageStateMachineService;
 import ob1.eventmanager.statemachine.MessageStateMachine;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +22,14 @@ public class LocalMessageUpdateHandler implements TelegramUpdateHandler {
 
     @Autowired
     private MessageStateMachineService stateMachineService;
+
+    private Map<String, LocalCommandHandler> localCommands = new HashMap<>();
+
+    @PostConstruct
+    private void init(
+            @Autowired @Qualifier("localStartCommand") LocalCommandHandler commandHandler) {
+        localCommands.put(commandHandler.getId(), commandHandler);
+    }
 
     @Override
     public void handle(Update update) {
@@ -43,16 +54,9 @@ public class LocalMessageUpdateHandler implements TelegramUpdateHandler {
     }
 
     private void handleCommand(String command, MessageStateMachine<LocalChatStates> stateMachine, Map<String, Object> headers) {
-        switch (command) {
-            case "start":
-
-                break;
-            case "new_event":
-                throw new UnsupportedOperationException();
-            case "edit_event":
-                throw new UnsupportedOperationException();
-            case "edit_answers":
-                throw new UnsupportedOperationException();
+        final LocalCommandHandler commandHandler = localCommands.get(command);
+        if (commandHandler != null) {
+            commandHandler.handle(stateMachine, headers);
         }
     }
 
@@ -62,7 +66,7 @@ public class LocalMessageUpdateHandler implements TelegramUpdateHandler {
             return stateMachineService.getLocal(chatId);
         }
         else {
-            return stateMachineService.createLocal(chat, LocalChatStates.NEW);
+            return stateMachineService.createLocal(chat, LocalChatStates.START);
         }
     }
 
