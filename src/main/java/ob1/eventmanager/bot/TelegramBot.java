@@ -110,7 +110,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             final EventEntity event = eventService.newEvent(user, message.getChatId());
             headers.put("event", event);
 
-            machine = eventStatesMachineFactory.create(stringChatId, LocalChatStates.NEW);
+            machine = eventStatesMachineFactory.create(stringChatId, LocalChatStates.START);
             eventStateMachines.put(stringChatId, machine);
 
             machine.handle(headers);
