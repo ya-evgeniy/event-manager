@@ -9,16 +9,16 @@ public interface EventService {
 
     EventEntity getEvent(long chatId);
 
-    void setEventName(EventEntity event, String name);
+    EventEntity setEventName(EventEntity event, String name);
 
-    void setEventDate(EventEntity event, String date);
+    EventEntity setEventDate(EventEntity event, String date);
 
-    void setEventPlace(EventEntity event, String place);
+    EventEntity setEventPlace(EventEntity event, String place);
 
-    void setEventCategory(EventEntity event, String category);
+    EventEntity setEventCategory(EventEntity event, String category);
 
-    void setEventTemplate(EventEntity event, String template);
+    EventEntity setEventTemplate(EventEntity event, String template);
 
-    void verifyEvent(EventEntity event);
+    EventEntity verifyEvent(EventEntity event);
 
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.LeaveChat;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -112,6 +113,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         headers.put("callbackData", callbackQuery.getData());
         headers.put("messageId", callbackQuery.getMessage().getMessageId());
 
+        final EventEntity event = eventService.getEvent(callbackQuery.getMessage().getChatId());
+        headers.put("event", event);
+
         MessageStateMachine<EventStates> machine = eventStateMachines.get(stringChatId);
         if (machine != null) {
             machine.handle(headers);
@@ -144,4 +148,13 @@ public class TelegramBot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+
+    public void leaveFromChat(String chatId) {
+        try {
+            execute(new LeaveChat(chatId));
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

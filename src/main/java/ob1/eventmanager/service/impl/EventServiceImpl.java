@@ -57,7 +57,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void setEventName(EventEntity event, String name) {
+    public EventEntity setEventName(EventEntity event, String name) {
         final EventEntity eventEntity = EventEntity.builder()
                 .id(event.getId())
                 .chatId(event.getChatId())
@@ -70,11 +70,11 @@ public class EventServiceImpl implements EventService {
                 .template(event.getTemplate())
                 .build();
 
-        eventRepository.save(eventEntity);
+        return eventRepository.save(eventEntity);
     }
 
     @Override
-    public void setEventDate(EventEntity event, String date) {
+    public EventEntity setEventDate(EventEntity event, String date) {
         final LocalDateTime datetime = parser.parse(date);
 
         final EventEntity eventEntity = EventEntity.builder()
@@ -89,11 +89,11 @@ public class EventServiceImpl implements EventService {
                 .template(event.getTemplate())
                 .build();
 
-        eventRepository.save(eventEntity);
+        return eventRepository.save(eventEntity);
     }
 
     @Override
-    public void setEventPlace(EventEntity event, String place) {
+    public EventEntity setEventPlace(EventEntity event, String place) {
         final EventEntity eventEntity = EventEntity.builder()
                 .id(event.getId())
                 .chatId(event.getChatId())
@@ -106,11 +106,11 @@ public class EventServiceImpl implements EventService {
                 .template(event.getTemplate())
                 .build();
 
-        eventRepository.save(eventEntity);
+        return eventRepository.save(eventEntity);
     }
 
     @Override
-    public void setEventCategory(EventEntity event, String categoryName) {
+    public EventEntity setEventCategory(EventEntity event, String categoryName) {
         Optional<CategoryEntity> optCategory;
         if (categoryName.startsWith("cat")) {
             final long id = Long.parseLong(categoryName.substring("cat".length()));
@@ -133,7 +133,7 @@ public class EventServiceImpl implements EventService {
                     .template(event.getTemplate())
                     .build();
 
-            eventRepository.save(eventEntity);
+            return eventRepository.save(eventEntity);
         }
         else {
             throw new CategoryNotFoundException(String.format("category with name '%s' not found", categoryName));
@@ -141,7 +141,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void setEventTemplate(EventEntity event, String templateName) {
+    public EventEntity setEventTemplate(EventEntity event, String templateName) {
         Optional<TemplateEntity> optTemplate;
         if (templateName.startsWith("tem")) {
             final long id = Long.parseLong(templateName.substring("tem".length()));
@@ -164,7 +164,7 @@ public class EventServiceImpl implements EventService {
                     .template(optTemplate.get())
                     .build();
 
-            eventRepository.save(eventEntity);
+            return eventRepository.save(eventEntity);
         }
         else {
             throw new TemplateNotFoundException(String.format("template with name '%s' not found", templateName));
@@ -172,7 +172,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void verifyEvent(EventEntity event) {
+    public EventEntity verifyEvent(EventEntity event) {
         final EventEntity eventEntity = EventEntity.builder()
                 .id(event.getId())
                 .chatId(event.getChatId())
@@ -185,7 +185,7 @@ public class EventServiceImpl implements EventService {
                 .template(event.getTemplate())
                 .build();
 
-        eventRepository.save(eventEntity);
+        return eventRepository.save(eventEntity);
     }
 
 }

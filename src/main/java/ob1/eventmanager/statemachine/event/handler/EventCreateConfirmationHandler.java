@@ -8,12 +8,13 @@ import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.event.EventStates;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.util.List;
 
+@Component("eventCreateConfirmHandler")
 public class EventCreateConfirmationHandler implements MessageStateMachineHandler<EventStates> {
 
     @Autowired
@@ -21,57 +22,64 @@ public class EventCreateConfirmationHandler implements MessageStateMachineHandle
 
     @Override
     public void handle(MessageStateMachineContext<EventStates> context) {
+        System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
+
+        EventEntity event = context.get("event");
         final String text = context.get("text");
         final String chatId = context.get("chatId");
-        final EventEntity event = context.get("event");
         final String callbackQuery = context.get("callbackData");
         final int messageId = context.get("messageId");
 
 
         final EventStates previousState = context.getPreviousState();
         if (previousState == EventStates.TEMPLATE_QUESTIONS) {
-            bot.send("Итак, ваше мероприятие полностью готово! Проверьте еще раз информацию о нем:\n" +
-                    "Название мероприятия: "+event.getName()+"\n"+
-                    "Время проведения: "+event.getDate()+"\n"+
-                    "Место: "+event.getPlace()+"\n", chatId);
+            final EditMessageText editMessage = new EditMessageText();
+            editMessage.setChatId(chatId);
+            editMessage.setMessageId(messageId);
+            editMessage.setText("Итак, ваше мероприятие полностью готово! Проверьте еще раз информацию о нем:\n" +
+                    "Название мероприятия: " + event.getName() + "\n" +
+                    "Время проведения: " + event.getDate() + "\n" +
+                    "Место: " + event.getPlace() + "\n"
+            );
+            bot.send(editMessage);
 
-            List<EventQuestionEntity> questions = event.getQuestions();
-
-            StringBuilder concatenatedString = new StringBuilder();
-            for(EventQuestionEntity question: questions){
-                concatenatedString.append("\nВопрос: ").append(question.getQuestion()).append("\n Варианты ответа: ");
+            StringBuilder builder = new StringBuilder();
+            builder.append("Я задам участникам вашего мероприятия следующие вопросы:\n");
+            for (EventQuestionEntity question : event.getQuestions()) {
+                builder.append("\n").append(question.getQuestion());
                 List<EventQuestionAnswerEntity> answers = question.getAnswers();
-                for(EventQuestionAnswerEntity answer: answers){
-                    concatenatedString.append(answer.getAnswer()).append(" ");
+                for (EventQuestionAnswerEntity answer : answers) {
+                    builder.append("\n - ").append(answer.getAnswer());
                 }
             }
-            bot.send("Я задам участникам вашего мероприятия следующие вопросы:\n"+
-                    concatenatedString, chatId);
-
-            InlineKeyboardMarkup keyboardMarkup = CreateConfirmationButtonBuilder.build();//fixme проверьте ето
 
             final SendMessage sendMessage = new SendMessage();
+
+            sendMessage.setText(builder.toString());
             sendMessage.setChatId(chatId);
-            sendMessage.setReplyMarkup(keyboardMarkup);
+            sendMessage.setReplyMarkup(CreateConfirmationButtonBuilder.build());
+
             bot.send(sendMessage);
 
         } else if (previousState == EventStates.CREATE_CONFIRM) {
-            if (callbackQuery.equals("confirmation")) {
+            if (callbackQuery.equals("confirm")) {
 
                 final EditMessageText editMessage = new EditMessageText();
                 editMessage.setMessageId(messageId);
                 editMessage.setChatId(chatId);
-                editMessage.setText("Мероприятие подтверждено!");
+                editMessage.setText("Мероприятие подтверждено! Начинайте приглашать людей в чат!");
                 bot.send(editMessage);
                 context.setNextState(EventStates.LISTEN_MEMBERS);
 
-            } else if (callbackQuery.equals("cancellation")) {
+            } else if (callbackQuery.equals("cancel")) {
                 final EditMessageText editMessage = new EditMessageText();
                 editMessage.setMessageId(messageId);
                 editMessage.setChatId(chatId);
                 editMessage.setText("Мероприятие отменено!");
                 bot.send(editMessage);
-                context.setNextState(EventStates.NEW);
+                context.setNextState(EventStates.LEAVE_FROM_CHAT);
+            } else if (callbackQuery.equals("edit")) {
+                throw new UnsupportedOperationException("not impl yet");
             }
         } else {
             throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());

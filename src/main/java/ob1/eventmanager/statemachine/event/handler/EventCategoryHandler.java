@@ -16,7 +16,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 
-@Component
+@Component("eventCategoryHandler")
 public class EventCategoryHandler implements MessageStateMachineHandler<EventStates> {
 
     @Autowired
@@ -30,9 +30,12 @@ public class EventCategoryHandler implements MessageStateMachineHandler<EventSta
 
     @Override
     public void handle(MessageStateMachineContext<EventStates> context) {
+        System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
+
+        EventEntity event = context.get("event");
         final String chatId = context.get("chatId");
-        final EventEntity event = context.get("event");
         final EditMessageText editMessage = new EditMessageText();
+
         final EventStates previousState = context.getPreviousState();
         if (previousState == EventStates.PLACE) {
             final SendMessage sendMessage = new SendMessage();
@@ -44,7 +47,8 @@ public class EventCategoryHandler implements MessageStateMachineHandler<EventSta
         } else if (previousState == EventStates.CATEGORY) {
             final String callbackData = context.get("callbackData");
             try {
-                eventService.setEventCategory(event, callbackData);
+                event = eventService.setEventCategory(event, callbackData);
+                context.getHeaders().put("event", event);
                 context.setNextState(EventStates.TEMPLATE);
             } catch (CategoryNotFoundException e) {
                 editMessage.setMessageId(context.get("messageId"));

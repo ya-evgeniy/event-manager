@@ -11,7 +11,7 @@ public interface TemplateService {
 
     List<TemplateEntity> getTemplatesByCategory(CategoryEntity category);
 
-    void copyTemplateToEvent(TemplateEntity template, EventEntity event);
+    EventEntity copyTemplateToEvent(TemplateEntity template, EventEntity event);
 
     Optional<TemplateEntity> getTemplateById(long id);
 

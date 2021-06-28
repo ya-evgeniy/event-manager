@@ -27,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Optional<CategoryEntity> getCategoryByName(String name) {
-        return categoryRepository.getFirstByNameLike(name);
+        return categoryRepository.findFirstByNameLike(name);
     }
 
 }

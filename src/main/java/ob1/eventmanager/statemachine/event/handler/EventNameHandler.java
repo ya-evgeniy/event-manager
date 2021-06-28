@@ -7,11 +7,9 @@ import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.event.EventStates;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-@Component
-@Qualifier("eventNameHandler")
+@Component("eventNameHandler")
 public class EventNameHandler implements MessageStateMachineHandler<EventStates> {
 
     @Autowired
@@ -22,8 +20,10 @@ public class EventNameHandler implements MessageStateMachineHandler<EventStates>
 
     @Override
     public void handle(MessageStateMachineContext<EventStates> context) {
+        System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
+
+        EventEntity event = context.get("event");
         final String text = context.get("text");
-        final EventEntity event = context.get("event");
         final String chatId = context.get("chatId");
 
         final EventStates previousState = context.getPreviousState();
@@ -31,7 +31,9 @@ public class EventNameHandler implements MessageStateMachineHandler<EventStates>
             bot.send("Что ж, приступим.\nВведите название вашего мероприятия.", chatId);
         }
         else if (previousState == EventStates.NAME) {
-            eventService.setEventName(event, text);
+            event = eventService.setEventName(event, text);
+            context.getHeaders().put("event", event);
+
             context.setNextState(EventStates.DATE);
             bot.send(text + " - отличное название!", chatId);
         }

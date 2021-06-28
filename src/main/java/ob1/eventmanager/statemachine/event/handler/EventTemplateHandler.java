@@ -13,12 +13,14 @@ import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.event.EventStates;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
+@Component("eventTemplateHandler")
 public class EventTemplateHandler implements MessageStateMachineHandler<EventStates> {
 
     @Autowired
@@ -35,35 +37,44 @@ public class EventTemplateHandler implements MessageStateMachineHandler<EventSta
 
     @Override
     public void handle(MessageStateMachineContext<EventStates> context) {
+        System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
+
+        EventEntity event = context.get("event");
         final String text = context.get("text");
         final String chatId = context.get("chatId");
-        final EventEntity event = context.get("event");
         final int messageId = context.get("messageId");
         final String callbackQuery = context.get("callbackData");
 
         final EventStates previousState = context.getPreviousState();
 
 
-        if (previousState == EventStates.CATEGORY) {
-            int categoryId = 0; //fixme get from db
-            final Optional<CategoryEntity> optCategory = categoryService.getById(categoryId);
-            final CategoryEntity category = optCategory.get();//fixme asked he somewhen...
+        if (previousState == EventStates.CATEGORY || previousState == EventStates.TEMPLATE_QUESTIONS) {
+            final CategoryEntity category = event.getCategory();
 
             final EditMessageText editMessage = new EditMessageText();
             editMessage.setMessageId(messageId);
             editMessage.setChatId(chatId);
 
-            List<TemplateEntity> templateEntities = templateService.getTemplatesByCategory(category);
+            editMessage.setText("Выберите шаблон:");
+
+            List<TemplateEntity> templateEntities = category.getTemplates();
             InlineKeyboardMarkup templateKeyboardMarkup = new TemplateButtonBuilder().buildTemplateButtons(templateEntities);
             editMessage.setReplyMarkup(templateKeyboardMarkup);
 
             bot.send(editMessage);
-
         } else if (previousState == EventStates.TEMPLATE) {
 
+            if (Objects.equals(text, "goBackToCategory") || Objects.equals(callbackQuery, "goBackToCategory")) {
+                context.setNextState(EventStates.CATEGORY);
+                return;
+            }
+
             if (text != null) {
+
                 try {
-                    eventService.setEventTemplate(event, text);
+                    event = eventService.setEventTemplate(event, text);
+                    context.getHeaders().put("event", event);
+
                     context.setNextState(EventStates.TEMPLATE_QUESTIONS);
                 } catch (TemplateNotFoundException e) {
                     final EditMessageText editMessage = new EditMessageText();
@@ -80,7 +91,9 @@ public class EventTemplateHandler implements MessageStateMachineHandler<EventSta
                     return;
                 }
                 try {
-                    eventService.setEventTemplate(event, callbackQuery);
+                    event = eventService.setEventTemplate(event, callbackQuery);
+                    context.getHeaders().put("event", event);
+
                     context.setNextState(EventStates.TEMPLATE_QUESTIONS);
                 } catch (TemplateNotFoundException e) {
                     final EditMessageText editMessage = new EditMessageText();

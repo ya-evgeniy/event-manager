@@ -23,6 +23,7 @@ public class MessageStateMachine<T> {
         while (handler != null) {
             final MessageStateMachineContext<T> context = new MessageStateMachineContext<>(headers, this.state, this.previousState, null);
             handler.handle(context);
+            handler = null;
 
             final T nextState = context.getNextState();
             previousState = this.state;

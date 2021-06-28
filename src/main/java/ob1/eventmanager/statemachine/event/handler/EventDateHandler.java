@@ -8,11 +8,9 @@ import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.event.EventStates;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-@Component
-@Qualifier("eventDateHandler")
+@Component("eventDateHandler")
 public class EventDateHandler implements MessageStateMachineHandler<EventStates> {
 
     @Autowired
@@ -23,9 +21,11 @@ public class EventDateHandler implements MessageStateMachineHandler<EventStates>
 
     @Override
     public void handle(MessageStateMachineContext<EventStates> context) {
+        System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
+
+        EventEntity event = context.get("event");
         final String text = context.get("text");
         final String chatId = context.get("chatId");
-        final EventEntity event = context.get("event");
 
         final EventStates previousState = context.getPreviousState();
         if (previousState == EventStates.NAME) {
@@ -33,7 +33,9 @@ public class EventDateHandler implements MessageStateMachineHandler<EventStates>
         }
         else if (previousState == EventStates.DATE) {
             try {
-                eventService.setEventDate(event, text);
+                event = eventService.setEventDate(event, text);
+                context.getHeaders().put("event", event);
+
                 bot.send("Предупредите людей, чтобы на: " + text + " ничего не планировали", chatId);
                 context.setNextState(EventStates.PLACE);
             } catch (IncorrectDateFormatException e) {
