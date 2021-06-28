@@ -3,6 +3,8 @@ package ob1.eventmanager.service;
 import ob1.eventmanager.entity.EventEntity;
 import ob1.eventmanager.entity.UserEntity;
 
+import java.util.List;
+
 public interface EventService {
 
     EventEntity newEvent(UserEntity user, long chatId);

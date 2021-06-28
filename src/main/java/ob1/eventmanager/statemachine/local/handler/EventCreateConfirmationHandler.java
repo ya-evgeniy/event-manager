@@ -1,4 +1,4 @@
-package ob1.eventmanager.statemachine.event.handler;
+package ob1.eventmanager.statemachine.local.handler;
 
 import ob1.eventmanager.bot.TelegramBot;
 import ob1.eventmanager.entity.EventEntity;
@@ -6,7 +6,7 @@ import ob1.eventmanager.entity.EventQuestionAnswerEntity;
 import ob1.eventmanager.entity.EventQuestionEntity;
 import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
-import ob1.eventmanager.statemachine.event.EventStates;
+import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -15,13 +15,13 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import java.util.List;
 
 @Component("eventCreateConfirmHandler")
-public class EventCreateConfirmationHandler implements MessageStateMachineHandler<EventStates> {
+public class EventCreateConfirmationHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
     private TelegramBot bot;
 
     @Override
-    public void handle(MessageStateMachineContext<EventStates> context) {
+    public void handle(MessageStateMachineContext<LocalChatStates> context) {
         System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
 
         EventEntity event = context.get("event");
@@ -31,8 +31,8 @@ public class EventCreateConfirmationHandler implements MessageStateMachineHandle
         final int messageId = context.get("messageId");
 
 
-        final EventStates previousState = context.getPreviousState();
-        if (previousState == EventStates.TEMPLATE_QUESTIONS) {
+        final LocalChatStates previousState = context.getPreviousState();
+        if (previousState == LocalChatStates.TEMPLATE_QUESTIONS) {
             final EditMessageText editMessage = new EditMessageText();
             editMessage.setChatId(chatId);
             editMessage.setMessageId(messageId);
@@ -61,7 +61,7 @@ public class EventCreateConfirmationHandler implements MessageStateMachineHandle
 
             bot.send(sendMessage);
 
-        } else if (previousState == EventStates.CREATE_CONFIRM) {
+        } else if (previousState == LocalChatStates.CREATE_CONFIRM) {
             if (callbackQuery.equals("confirm")) {
 
                 final EditMessageText editMessage = new EditMessageText();
@@ -69,7 +69,7 @@ public class EventCreateConfirmationHandler implements MessageStateMachineHandle
                 editMessage.setChatId(chatId);
                 editMessage.setText("Мероприятие подтверждено! Начинайте приглашать людей в чат!");
                 bot.send(editMessage);
-                context.setNextState(EventStates.LISTEN_MEMBERS);
+                context.setNextState(LocalChatStates.LISTEN_MEMBERS);
 
             } else if (callbackQuery.equals("cancel")) {
                 final EditMessageText editMessage = new EditMessageText();
@@ -77,7 +77,7 @@ public class EventCreateConfirmationHandler implements MessageStateMachineHandle
                 editMessage.setChatId(chatId);
                 editMessage.setText("Мероприятие отменено!");
                 bot.send(editMessage);
-                context.setNextState(EventStates.LEAVE_FROM_CHAT);
+                context.setNextState(LocalChatStates.LEAVE_FROM_CHAT);
             } else if (callbackQuery.equals("edit")) {
                 throw new UnsupportedOperationException("not impl yet");
             }

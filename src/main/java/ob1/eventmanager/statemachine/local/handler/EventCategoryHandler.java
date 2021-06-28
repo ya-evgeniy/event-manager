@@ -1,4 +1,4 @@
-package ob1.eventmanager.statemachine.event.handler;
+package ob1.eventmanager.statemachine.local.handler;
 
 import ob1.eventmanager.bot.TelegramBot;
 import ob1.eventmanager.categoryChooser.CategoryButtonBuilder;
@@ -8,7 +8,7 @@ import ob1.eventmanager.service.CategoryService;
 import ob1.eventmanager.service.EventService;
 import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
-import ob1.eventmanager.statemachine.event.EventStates;
+import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,7 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 
 
 @Component("eventCategoryHandler")
-public class EventCategoryHandler implements MessageStateMachineHandler<EventStates> {
+public class EventCategoryHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
     private TelegramBot bot;
@@ -29,27 +29,27 @@ public class EventCategoryHandler implements MessageStateMachineHandler<EventSta
     private EventService eventService;
 
     @Override
-    public void handle(MessageStateMachineContext<EventStates> context) {
+    public void handle(MessageStateMachineContext<LocalChatStates> context) {
         System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
 
         EventEntity event = context.get("event");
         final String chatId = context.get("chatId");
         final EditMessageText editMessage = new EditMessageText();
 
-        final EventStates previousState = context.getPreviousState();
-        if (previousState == EventStates.PLACE) {
+        final LocalChatStates previousState = context.getPreviousState();
+        if (previousState == LocalChatStates.PLACE) {
             final SendMessage sendMessage = new SendMessage();
             sendMessage.setText("Выберите категорию, к которой относится ваше мероприятие:");
             sendMessage.setChatId(chatId);
             InlineKeyboardMarkup categoryKeyboardMarkup = new CategoryButtonBuilder().buildCategoryButtons(categoryService.getCategories());
             sendMessage.setReplyMarkup(categoryKeyboardMarkup);
             bot.send(sendMessage);
-        } else if (previousState == EventStates.CATEGORY) {
+        } else if (previousState == LocalChatStates.CATEGORY) {
             final String callbackData = context.get("callbackData");
             try {
                 event = eventService.setEventCategory(event, callbackData);
                 context.getHeaders().put("event", event);
-                context.setNextState(EventStates.TEMPLATE);
+                context.setNextState(LocalChatStates.TEMPLATE);
             } catch (CategoryNotFoundException e) {
                 editMessage.setMessageId(context.get("messageId"));
                 editMessage.setChatId(chatId);
@@ -57,7 +57,7 @@ public class EventCategoryHandler implements MessageStateMachineHandler<EventSta
                 bot.send(editMessage);
             }
 
-        } else if (previousState == EventStates.TEMPLATE) {
+        } else if (previousState == LocalChatStates.TEMPLATE) {
             editMessage.setText("Выберите категорию, к которой относится ваше мероприятие:");
             editMessage.setChatId(chatId);
             editMessage.setMessageId(context.get("messageId"));

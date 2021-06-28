@@ -1,4 +1,4 @@
-package ob1.eventmanager.statemachine.event;
+package ob1.eventmanager.statemachine.local;
 
 public enum EventEvents {
     STARTED,

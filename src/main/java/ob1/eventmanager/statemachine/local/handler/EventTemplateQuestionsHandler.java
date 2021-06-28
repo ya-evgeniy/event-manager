@@ -1,4 +1,4 @@
-package ob1.eventmanager.statemachine.event.handler;
+package ob1.eventmanager.statemachine.local.handler;
 
 import ob1.eventmanager.bot.TelegramBot;
 import ob1.eventmanager.entity.EventEntity;
@@ -7,7 +7,7 @@ import ob1.eventmanager.service.EventService;
 import ob1.eventmanager.service.TemplateService;
 import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
-import ob1.eventmanager.statemachine.event.EventStates;
+import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component("eventTemplateQuestionHandler")
-public class EventTemplateQuestionsHandler implements MessageStateMachineHandler<EventStates> {
+public class EventTemplateQuestionsHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
     private TelegramBot bot;
@@ -30,16 +30,16 @@ public class EventTemplateQuestionsHandler implements MessageStateMachineHandler
     private TemplateService templateService;
 
     @Override
-    public void handle(MessageStateMachineContext<EventStates> context) {
+    public void handle(MessageStateMachineContext<LocalChatStates> context) {
         System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
 
         EventEntity event = context.get("event");
         final String text = context.get("text");
         final String chatId = context.get("chatId");
 
-        final EventStates previousState = context.getPreviousState();
+        final LocalChatStates previousState = context.getPreviousState();
 
-        if (previousState == EventStates.TEMPLATE) {
+        if (previousState == LocalChatStates.TEMPLATE) {
             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
             List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();
 
@@ -80,16 +80,16 @@ public class EventTemplateQuestionsHandler implements MessageStateMachineHandler
             editMessage.setText(str.toString());
             editMessage.setReplyMarkup(inlineKeyboardMarkup);
             bot.send(editMessage);
-        } else if (previousState == EventStates.TEMPLATE_QUESTIONS) {
+        } else if (previousState == LocalChatStates.TEMPLATE_QUESTIONS) {
             final String callbackData = context.get("callbackData");
             if (callbackData.equals("cancel")) {
-                context.setNextState(EventStates.TEMPLATE);
+                context.setNextState(LocalChatStates.TEMPLATE);
             }
             else if (callbackData.equals("success")) {
                 event = templateService.copyTemplateToEvent(event.getTemplate(), event);
                 context.getHeaders().put("event", event);
 
-                context.setNextState(EventStates.CREATE_CONFIRM);
+                context.setNextState(LocalChatStates.CREATE_CONFIRM);
             }
             else if (callbackData.equals("edit")) {
                 throw new UnsupportedOperationException("edit not implemented"); //TODO

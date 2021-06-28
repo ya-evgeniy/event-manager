@@ -1,8 +1,8 @@
 package ob1.eventmanager.bot.event_create_statemachine;
 
 import ob1.eventmanager.bot.TelegramBot;
-import ob1.eventmanager.statemachine.event.EventEvents;
-import ob1.eventmanager.statemachine.event.EventStates;
+import ob1.eventmanager.statemachine.local.EventEvents;
+import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.statemachine.StateMachine;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -14,11 +14,11 @@ public class EventCreateSession {
     private static String START_COMMAND = "/start";
     private static String CREATE_COMMAND = "/create";
 
-    private final StateMachine<EventStates, EventEvents> stateMachine;
+    private final StateMachine<LocalChatStates, EventEvents> stateMachine;
 
     private final String chatId;
 
-    public EventCreateSession(String id, StateMachine<EventStates, EventEvents> stateMachine, TelegramBot bot) {
+    public EventCreateSession(String id, StateMachine<LocalChatStates, EventEvents> stateMachine, TelegramBot bot) {
         this.chatId = id;
         this.stateMachine = stateMachine;
         this.bot = bot;

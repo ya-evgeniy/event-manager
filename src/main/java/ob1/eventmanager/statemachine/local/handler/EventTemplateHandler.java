@@ -1,4 +1,4 @@
-package ob1.eventmanager.statemachine.event.handler;
+package ob1.eventmanager.statemachine.local.handler;
 
 import ob1.eventmanager.bot.TelegramBot;
 import ob1.eventmanager.categoryChooser.TemplateButtonBuilder;
@@ -11,7 +11,7 @@ import ob1.eventmanager.service.EventService;
 import ob1.eventmanager.service.TemplateService;
 import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
-import ob1.eventmanager.statemachine.event.EventStates;
+import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Component("eventTemplateHandler")
-public class EventTemplateHandler implements MessageStateMachineHandler<EventStates> {
+public class EventTemplateHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
     private TelegramBot bot;
@@ -36,7 +36,7 @@ public class EventTemplateHandler implements MessageStateMachineHandler<EventSta
     private CategoryService categoryService;
 
     @Override
-    public void handle(MessageStateMachineContext<EventStates> context) {
+    public void handle(MessageStateMachineContext<LocalChatStates> context) {
         System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
 
         EventEntity event = context.get("event");
@@ -45,10 +45,10 @@ public class EventTemplateHandler implements MessageStateMachineHandler<EventSta
         final int messageId = context.get("messageId");
         final String callbackQuery = context.get("callbackData");
 
-        final EventStates previousState = context.getPreviousState();
+        final LocalChatStates previousState = context.getPreviousState();
 
 
-        if (previousState == EventStates.CATEGORY || previousState == EventStates.TEMPLATE_QUESTIONS) {
+        if (previousState == LocalChatStates.CATEGORY || previousState == LocalChatStates.TEMPLATE_QUESTIONS) {
             final CategoryEntity category = event.getCategory();
 
             final EditMessageText editMessage = new EditMessageText();
@@ -62,10 +62,10 @@ public class EventTemplateHandler implements MessageStateMachineHandler<EventSta
             editMessage.setReplyMarkup(templateKeyboardMarkup);
 
             bot.send(editMessage);
-        } else if (previousState == EventStates.TEMPLATE) {
+        } else if (previousState == LocalChatStates.TEMPLATE) {
 
             if (Objects.equals(text, "goBackToCategory") || Objects.equals(callbackQuery, "goBackToCategory")) {
-                context.setNextState(EventStates.CATEGORY);
+                context.setNextState(LocalChatStates.CATEGORY);
                 return;
             }
 
@@ -75,7 +75,7 @@ public class EventTemplateHandler implements MessageStateMachineHandler<EventSta
                     event = eventService.setEventTemplate(event, text);
                     context.getHeaders().put("event", event);
 
-                    context.setNextState(EventStates.TEMPLATE_QUESTIONS);
+                    context.setNextState(LocalChatStates.TEMPLATE_QUESTIONS);
                 } catch (TemplateNotFoundException e) {
                     final EditMessageText editMessage = new EditMessageText();
                     editMessage.setMessageId(messageId);
@@ -87,14 +87,14 @@ public class EventTemplateHandler implements MessageStateMachineHandler<EventSta
 
             if (callbackQuery != null) {
                 if (callbackQuery.equals("goBackToTemplate")) {
-                    context.setNextState(EventStates.CATEGORY);
+                    context.setNextState(LocalChatStates.CATEGORY);
                     return;
                 }
                 try {
                     event = eventService.setEventTemplate(event, callbackQuery);
                     context.getHeaders().put("event", event);
 
-                    context.setNextState(EventStates.TEMPLATE_QUESTIONS);
+                    context.setNextState(LocalChatStates.TEMPLATE_QUESTIONS);
                 } catch (TemplateNotFoundException e) {
                     final EditMessageText editMessage = new EditMessageText();
                     editMessage.setMessageId(messageId);

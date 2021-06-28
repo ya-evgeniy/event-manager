@@ -1,8 +1,8 @@
 package ob1.eventmanager.bot.event_create_statemachine;
 
 import ob1.eventmanager.bot.TelegramBot;
-import ob1.eventmanager.statemachine.event.EventEvents;
-import ob1.eventmanager.statemachine.event.EventStates;
+import ob1.eventmanager.statemachine.local.EventEvents;
+import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.listener.StateMachineListenerAdapter;
 import org.springframework.statemachine.state.State;
@@ -15,7 +15,7 @@ public class EventCreateStateMachineListener extends StateMachineListenerAdapter
     private String eventName = "";
     private String eventLocation = "";
     private Date dateTime;
-    private StateMachine<EventStates, EventEvents> stateMachine;
+    private StateMachine<LocalChatStates, EventEvents> stateMachine;
 
     private TelegramBot bot;
 
@@ -26,7 +26,7 @@ public class EventCreateStateMachineListener extends StateMachineListenerAdapter
         this.chatId = chatId;
     }
 
-    public void setStateMachine(StateMachine<EventStates, EventEvents> stateMachine) {
+    public void setStateMachine(StateMachine<LocalChatStates, EventEvents> stateMachine) {
         this.stateMachine = stateMachine;
     }
 

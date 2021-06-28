@@ -6,8 +6,9 @@ import ob1.eventmanager.service.EventService;
 import ob1.eventmanager.service.UserService;
 import ob1.eventmanager.statemachine.MessageStateMachine;
 import ob1.eventmanager.statemachine.MessageStateMachineFactory;
-import ob1.eventmanager.statemachine.event.EventStates;
+import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -15,6 +16,7 @@ import org.telegram.telegrambots.meta.api.methods.groupadministration.LeaveChat;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -33,7 +35,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private String botToken;
 
     @Autowired
-    private MessageStateMachineFactory<EventStates> eventStatesMachineFactory;
+    private MessageStateMachineFactory<LocalChatStates> eventStatesMachineFactory;
 
     @Autowired
     private EventService eventService;
@@ -41,7 +43,19 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     private UserService userService;
 
-    private final Map<String, MessageStateMachine<EventStates>> eventStateMachines = new HashMap<>();
+    @Autowired @Qualifier("telegramGroupCallbackQueryUpdateHandler")
+    private TelegramUpdateHandler groupCallbackQueryUpdateHandler;
+
+    @Autowired @Qualifier("telegramGroupMessageUpdateHandler")
+    private TelegramUpdateHandler groupMessageUpdateHandler;
+
+    @Autowired @Qualifier("telegramLocalCallbackQueryUpdateHandler")
+    private TelegramUpdateHandler localCallbackQueryUpdateHandler;
+
+    @Autowired @Qualifier("telegramLocalMessageUpdateHandler")
+    private TelegramUpdateHandler localMessageUpdateHandler;
+
+    private final Map<String, MessageStateMachine<LocalChatStates>> eventStateMachines = new HashMap<>();
 
     @Override
     public String getBotUsername() {
@@ -57,15 +71,28 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         System.out.println(update);
 
-        if (update.hasMessage()) {
-            handleMessage(update);
+        boolean isGroup = update.hasMessage() && update.getMessage().getChat().isGroupChat()
+                || update.hasCallbackQuery() && update.getCallbackQuery().getMessage().getChat().isGroupChat();
+
+        if (isGroup) {
+            if (update.hasMessage()) {
+                groupMessageUpdateHandler.handle(update);
+            }
+            else if (update.hasCallbackQuery()) {
+                groupCallbackQueryUpdateHandler.handle(update);
+            }
         }
-        else if (update.hasCallbackQuery()) {
-            handleCallbackQuery(update);
+        else {
+            if (update.hasMessage()) {
+                localMessageUpdateHandler.handle(update);
+            }
+            else if (update.hasCallbackQuery()) {
+                localCallbackQueryUpdateHandler.handle(update);
+            }
         }
     }
 
-    private void handleMessage(Update update) {
+    private void handleLocalMessage(Update update) {
         final Message message = update.getMessage();
         if (message.getFrom().getIsBot()) return;
 
@@ -78,12 +105,12 @@ public class TelegramBot extends TelegramLongPollingBot {
         headers.put("userId", message.getFrom().getId());
         headers.put("messageId", message.getMessageId());
 
-        MessageStateMachine<EventStates> machine = eventStateMachines.get(stringChatId);
+        MessageStateMachine<LocalChatStates> machine = eventStateMachines.get(stringChatId);
         if (machine == null && message.getGroupchatCreated() != null && message.getGroupchatCreated()) {
             final EventEntity event = eventService.newEvent(user, message.getChatId());
             headers.put("event", event);
 
-            machine = eventStatesMachineFactory.create(stringChatId, EventStates.NEW);
+            machine = eventStatesMachineFactory.create(stringChatId, LocalChatStates.NEW);
             eventStateMachines.put(stringChatId, machine);
 
             machine.handle(headers);
@@ -101,7 +128,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private void handleCallbackQuery(Update update) {
+    private void handleLocalCallbackQuery(Update update) {
         final CallbackQuery callbackQuery = update.getCallbackQuery();
 
         final UserEntity user = userService.getUserByTelegramId(callbackQuery.getFrom().getId());
@@ -116,7 +143,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         final EventEntity event = eventService.getEvent(callbackQuery.getMessage().getChatId());
         headers.put("event", event);
 
-        MessageStateMachine<EventStates> machine = eventStateMachines.get(stringChatId);
+        MessageStateMachine<LocalChatStates> machine = eventStateMachines.get(stringChatId);
         if (machine != null) {
             machine.handle(headers);
         }

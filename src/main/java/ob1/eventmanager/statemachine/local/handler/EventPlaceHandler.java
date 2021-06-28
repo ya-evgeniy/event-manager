@@ -1,16 +1,16 @@
-package ob1.eventmanager.statemachine.event.handler;
+package ob1.eventmanager.statemachine.local.handler;
 
 import ob1.eventmanager.bot.TelegramBot;
 import ob1.eventmanager.entity.EventEntity;
 import ob1.eventmanager.service.EventService;
 import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
-import ob1.eventmanager.statemachine.event.EventStates;
+import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("eventNameHandler")
-public class EventNameHandler implements MessageStateMachineHandler<EventStates> {
+@Component("eventPlaceHandler")
+public class EventPlaceHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
     private TelegramBot bot;
@@ -19,25 +19,23 @@ public class EventNameHandler implements MessageStateMachineHandler<EventStates>
     private EventService eventService;
 
     @Override
-    public void handle(MessageStateMachineContext<EventStates> context) {
+    public void handle(MessageStateMachineContext<LocalChatStates> context) {
         System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
 
         EventEntity event = context.get("event");
         final String text = context.get("text");
         final String chatId = context.get("chatId");
 
-        final EventStates previousState = context.getPreviousState();
-        if (previousState == EventStates.NEW) {
-            bot.send("Что ж, приступим.\nВведите название вашего мероприятия.", chatId);
-        }
-        else if (previousState == EventStates.NAME) {
-            event = eventService.setEventName(event, text);
+        final LocalChatStates previousState = context.getPreviousState();
+        if (previousState == LocalChatStates.DATE) {
+            bot.send("Где будет проходить меропроиятие?", chatId);
+        } else if (previousState == LocalChatStates.PLACE) {
+            event = eventService.setEventPlace(event, text);
             context.getHeaders().put("event", event);
 
-            context.setNextState(EventStates.DATE);
-            bot.send(text + " - отличное название!", chatId);
-        }
-        else {
+            bot.send("Так и запишем: " + text, chatId);
+            context.setNextState(LocalChatStates.CATEGORY);
+        } else {
             throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());
         }
     }
