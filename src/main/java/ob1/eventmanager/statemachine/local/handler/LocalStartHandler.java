@@ -7,7 +7,7 @@ import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("eventNewHandler")
+@Component("localStartHandler")
 public class LocalStartHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
@@ -15,8 +15,6 @@ public class LocalStartHandler implements MessageStateMachineHandler<LocalChatSt
 
     @Override
     public void handle(MessageStateMachineContext<LocalChatStates> context) {
-        System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
-
         final String chatId = context.get("chatId");
 
         final LocalChatStates previousState = context.getPreviousState();
@@ -26,10 +24,13 @@ public class LocalStartHandler implements MessageStateMachineHandler<LocalChatSt
                             "- собирать статистику о предпочтениях гостей;\n" +
                             "- напоминать о предстоящем событии\n" +
                             "- всегда держать в курсе текущего положения дел.\n" +
-                            "Для того, чтобы ввести данные о своем мероприятии, воспользуйтесь командой /create",
+                            "\n" +
+                            "Вот команды которыми ты можешь пользоваться:\n" +
+                            "/new_event - Создать новое мероприятие\n" +
+                            "/actual_events - Посмотреть актуальные мероприятия",
                     chatId
             );
-            context.setNextState(LocalChatStates.WAIT_COMMANDS);// FIXME: 28.06.2021 decide what to do
+            context.setNextState(LocalChatStates.CHECK_ACTUAL_EVENTS);
         }
         else {
             throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());

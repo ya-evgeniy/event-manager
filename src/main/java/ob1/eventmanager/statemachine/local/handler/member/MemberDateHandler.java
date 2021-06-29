@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
-@Component("memberDateHandler")
+@Component("localMemberDateHandler")
 public class MemberDateHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired

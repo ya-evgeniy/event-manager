@@ -9,7 +9,7 @@ import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("eventPlaceHandler")
+@Component("localEventPlaceHandler")
 public class EventPlaceHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
@@ -20,8 +20,6 @@ public class EventPlaceHandler implements MessageStateMachineHandler<LocalChatSt
 
     @Override
     public void handle(MessageStateMachineContext<LocalChatStates> context) {
-        System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
-
         EventEntity event = context.get("event");
         final String text = context.get("text");
         final String chatId = context.get("chatId");

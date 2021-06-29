@@ -10,18 +10,19 @@ import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Component("memberQuestionHandler")
+@Component("localMemberQuestionHandler")
 public class MemberQuestionHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
     private TelegramBot bot;
+
     @Autowired
     private MemberAnswerService memberAnswerService;
+
     @Autowired
     private EventService eventService;
 
@@ -29,13 +30,13 @@ public class MemberQuestionHandler implements MessageStateMachineHandler<LocalCh
 
     @Override
     public void handle(MessageStateMachineContext<LocalChatStates> context) {
-        System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
         final String text = context.get("text");
         final String chatId = context.get("chatId");
         final String callbackQuery = context.get("callbackData");
         final int messageId = context.get("messageId");
         final MemberEntity member = new MemberEntity();//fixme добавить getMemberEntity()
-        List<EventQuestionEntity> questions = eventService.getEvent(Long.parseLong(chatId)).getQuestions();
+//        List<EventQuestionEntity> questions = eventService.getGroupEvent(Long.parseLong(chatId)).getQuestions(); // fixme
+        List<EventQuestionEntity> questions = new ArrayList<>();
         final String currentQuestion = questions.get(prevQuestionIndex).getQuestion();
 
         final LocalChatStates previousState = context.getPreviousState();

@@ -7,8 +7,6 @@ import java.util.Map;
 
 public interface LocalCommandHandler {
 
-    String getId();
-
     void handle(MessageStateMachine<LocalChatStates> stateMachine, Map<String, Object> headers);
 
 }

@@ -17,7 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.ArrayList;
 import java.util.List;
 
-@Component("eventTemplateQuestionHandler")
+@Component("localEventTemplateQuestionHandler")
 public class EventTemplateQuestionsHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
@@ -31,8 +31,6 @@ public class EventTemplateQuestionsHandler implements MessageStateMachineHandler
 
     @Override
     public void handle(MessageStateMachineContext<LocalChatStates> context) {
-        System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
-
         EventEntity event = context.get("event");
         final String text = context.get("text");
         final String chatId = context.get("chatId");

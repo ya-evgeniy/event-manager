@@ -36,25 +36,28 @@ public class EventServiceImpl implements EventService {
     private LocalDateParser parser;
 
     @Override
-    public EventEntity newEvent(UserEntity user, long chatId) {
-        final Optional<EventEntity> optEvent = eventRepository.getByChatId(chatId);
-        if (optEvent.isPresent()) {
-            throw new EventAlreadyExistsException(String.format("Event with chat id '%s' already exists", chatId));
-        }
+    public EventEntity getEventById(long id) {
+        return eventRepository.getById(id);
+    }
 
+    @Override
+    public List<EventEntity> getOwnerEvents(long chatId) {
+        return eventRepository.findAllByOwnerChatId(chatId);
+    }
+
+    @Override
+    public EventEntity newEvent(UserEntity owner, long ownerChatId) {
         final EventEntity event = EventEntity.builder()
-                .owner(user)
-                .chatId(chatId)
+                .owner(owner)
+                .ownerChatId(ownerChatId)
                 .build();
 
         return eventRepository.save(event);
     }
 
     @Override
-    public EventEntity getEvent(long chatId) {
-        return eventRepository.getByChatId(chatId).orElseThrow(
-                () -> new EventNotFoundException(String.format("Event with chat id '%s' not found", chatId))
-        );
+    public Optional<EventEntity> getGroupEvent(long chatId) {
+        return eventRepository.getByChatId(chatId);
     }
 
     @Override
@@ -187,6 +190,11 @@ public class EventServiceImpl implements EventService {
                 .build();
 
         return eventRepository.save(eventEntity);
+    }
+
+    @Override
+    public void delete(EventEntity event) {
+
     }
 
 }

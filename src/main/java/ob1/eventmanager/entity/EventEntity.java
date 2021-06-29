@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Proxy(lazy = false)
 @Getter
 @Builder
 @AllArgsConstructor @NoArgsConstructor
@@ -31,7 +33,7 @@ public class EventEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private long chatId;
 
     @Column(nullable = true)
@@ -57,6 +59,8 @@ public class EventEntity {
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
+
+    private long ownerChatId;
 
     @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)

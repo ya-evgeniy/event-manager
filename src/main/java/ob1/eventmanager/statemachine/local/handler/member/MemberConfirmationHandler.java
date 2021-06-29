@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
-@Component("memberConfirmationHandler")
+@Component("localMemberConfirmHandler")
 public class MemberConfirmationHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired

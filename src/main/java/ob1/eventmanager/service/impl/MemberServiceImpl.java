@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,7 +31,10 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Set<EventEntity> getEventsByTelegramId(int telegramId) {
-        final UserEntity userEntity = userService.getUserByTelegramId(telegramId);
+        final Optional<UserEntity> optUserEntity = userService.getUserByTelegramId(telegramId);
+        if (optUserEntity.isEmpty()) return Collections.emptySet();
+
+        final UserEntity userEntity = optUserEntity.get();
         final Set<MemberEntity> members = memberRepository.findAllByUser(userEntity);
 
         return members.stream()

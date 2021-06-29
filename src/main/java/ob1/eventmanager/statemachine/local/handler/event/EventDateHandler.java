@@ -10,7 +10,7 @@ import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("eventDateHandler")
+@Component("localEventDateHandler")
 public class EventDateHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
@@ -21,8 +21,6 @@ public class EventDateHandler implements MessageStateMachineHandler<LocalChatSta
 
     @Override
     public void handle(MessageStateMachineContext<LocalChatStates> context) {
-        System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
-
         EventEntity event = context.get("event");
         final String text = context.get("text");
         final String chatId = context.get("chatId");

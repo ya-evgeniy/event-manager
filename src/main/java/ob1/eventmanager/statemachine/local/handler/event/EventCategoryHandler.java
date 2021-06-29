@@ -16,7 +16,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 
-@Component("eventCategoryHandler")
+@Component("localEventCategoryHandler")
 public class EventCategoryHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
@@ -30,8 +30,6 @@ public class EventCategoryHandler implements MessageStateMachineHandler<LocalCha
 
     @Override
     public void handle(MessageStateMachineContext<LocalChatStates> context) {
-        System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
-
         EventEntity event = context.get("event");
         final String chatId = context.get("chatId");
         final EditMessageText editMessage = new EditMessageText();

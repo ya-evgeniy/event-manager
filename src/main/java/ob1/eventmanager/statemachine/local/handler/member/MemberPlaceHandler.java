@@ -12,27 +12,27 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
-@Component("memberPlaceHandler")
+@Component("localMemberPlaceHandler")
 public class MemberPlaceHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
     private TelegramBot bot;
+
     @Autowired
     private EventService eventService;
+
     @Autowired
     private MemberAnswerService memberAnswerService;
 
-
     @Override
     public void handle(MessageStateMachineContext<LocalChatStates> context) {
-
-        System.out.println(context.getPreviousState() + " -> " + context.getCurrentState());
         final String text = context.get("text");
         final String chatId = context.get("chatId");
         final String callbackQuery = context.get("callbackData");
         final int messageId = context.get("messageId");
         final MemberEntity member = new MemberEntity();//fixme добавить getMemberEntity()
-        String userPlace = eventService.getEvent(Long.parseLong(chatId)).getPlace();
+//        String userPlace = eventService.getGroupEvent(Long.parseLong(chatId)).getPlace(); // fixme
+        String userPlace = null;
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.MEMBER_INFO) {

@@ -4,12 +4,17 @@ import ob1.eventmanager.entity.EventEntity;
 import ob1.eventmanager.entity.UserEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EventService {
 
-    EventEntity newEvent(UserEntity user, long chatId);
+    EventEntity getEventById(long id);
 
-    EventEntity getEvent(long chatId);
+    List<EventEntity> getOwnerEvents(long chatId);
+
+    EventEntity newEvent(UserEntity owner, long ownerChatId);
+
+    Optional<EventEntity> getGroupEvent(long chatId);
 
     EventEntity setEventName(EventEntity event, String name);
 
@@ -22,5 +27,7 @@ public interface EventService {
     EventEntity setEventTemplate(EventEntity event, String template);
 
     EventEntity verifyEvent(EventEntity event);
+
+    void delete(EventEntity event);
 
 }

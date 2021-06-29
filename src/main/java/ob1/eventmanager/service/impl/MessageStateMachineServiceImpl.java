@@ -1,6 +1,8 @@
 package ob1.eventmanager.service.impl;
 
+import ob1.eventmanager.entity.UserEntity;
 import ob1.eventmanager.service.MessageStateMachineService;
+import ob1.eventmanager.service.UserService;
 import ob1.eventmanager.statemachine.MessageStateMachine;
 import ob1.eventmanager.statemachine.MessageStateMachineFactory;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
@@ -8,11 +10,6 @@ import ob1.eventmanager.statemachine.group.GroupChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.User;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class MessageStateMachineServiceImpl implements MessageStateMachineService {
@@ -20,63 +17,36 @@ public class MessageStateMachineServiceImpl implements MessageStateMachineServic
     @Autowired @Qualifier("localStateMachineFactory")
     private MessageStateMachineFactory<LocalChatStates> localStateMachineFactory;
 
-    @Autowired @Qualifier("groupStateMachineFactory")
-    private MessageStateMachineFactory<GroupChatStates> groupStateMachineFactory;
+//    @Autowired @Qualifier("groupStateMachineFactory")
+//    private MessageStateMachineFactory<GroupChatStates> groupStateMachineFactory;
 
-    private final Map<Long, MessageStateMachine<LocalChatStates>> localStateMachines = new HashMap<>();
-
-    private final Map<Long, MessageStateMachine<GroupChatStates>> groupStateMachines = new HashMap<>();
-
+    @Autowired
+    private UserService userService;
 
     @Override
-    public boolean hasLocal(long chatId) {
-        return localStateMachines.containsKey(chatId);
-    }
+    public MessageStateMachine<LocalChatStates> createLocal(UserEntity user) {
+        final String userPreviousState = user.getPreviousState();
+        final String userCurrentState = user.getPreviousState();
 
-    @Override
-    public boolean hasGroup(long chatId) {
-        return groupStateMachines.containsKey(chatId);
-    }
-
-    @Override
-    public MessageStateMachine<LocalChatStates> createLocal(Chat chat, LocalChatStates initialState) {
-        final MessageStateMachine<LocalChatStates> machine = localStateMachineFactory.create(
-                String.valueOf(chat.getId()),
-                initialState
+        final LocalChatStates previousState = LocalChatStates.getByName(userPreviousState).orElse(null);
+        final LocalChatStates currentState = LocalChatStates.getByName(userCurrentState).orElse(LocalChatStates.START);
+        return this.localStateMachineFactory.create(
+                user.getTelegramId(),
+                previousState,
+                currentState
         );
-
-        this.localStateMachines.put(chat.getId(), machine);
-
-        return machine;
-    }
-
-    @Override
-    public MessageStateMachine<GroupChatStates> createGroup(Chat chat, GroupChatStates initialState) {
-        final MessageStateMachine<GroupChatStates> machine = groupStateMachineFactory.create(
-                String.valueOf(chat.getId()),
-                initialState
-        );
-
-        this.groupStateMachines.put(chat.getId(), machine);
-
-        return machine;
-    }
-
-    @Override
-    public MessageStateMachine<LocalChatStates> getLocal(long chatId) {
-        final MessageStateMachine<LocalChatStates> machine = this.localStateMachines.get(chatId);
-        if (machine == null) {
-            throw new UnsupportedOperationException();
-        }
-        return machine;
     }
 
     @Override
     public MessageStateMachine<GroupChatStates> getGroup(long chatId) {
-        final MessageStateMachine<GroupChatStates> machine = this.groupStateMachines.get(chatId);
-        if (machine == null) {
-            throw new UnsupportedOperationException();
-        }
-        return machine;
+        throw new UnsupportedOperationException("not impl yet");
     }
+
+    @Override
+    public void save(UserEntity userEntity, MessageStateMachine<LocalChatStates> stateMachine) {
+        String previousState = stateMachine.getPreviousState() == null ? null : stateMachine.getPreviousState().name();
+        String currentState = stateMachine.getCurrentState() == null ? null : stateMachine.getCurrentState().name();
+        userService.setUserState(userEntity, previousState, currentState);
+    }
+
 }

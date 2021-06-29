@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-@Component("memberInfoHandler")
+@Component("localMemberInfoHandler")
 public class MemberInfoHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
