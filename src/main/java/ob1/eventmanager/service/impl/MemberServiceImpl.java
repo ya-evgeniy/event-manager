@@ -1,6 +1,7 @@
 package ob1.eventmanager.service.impl;
 
 import ob1.eventmanager.entity.EventEntity;
+import ob1.eventmanager.entity.EventQuestionEntity;
 import ob1.eventmanager.entity.MemberEntity;
 import ob1.eventmanager.entity.UserEntity;
 import ob1.eventmanager.repository.MemberRepository;
@@ -28,6 +29,30 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     private UserService userService;
 
+
+    @Override
+    public boolean hasMember(UserEntity user, EventEntity event) {
+        return memberRepository.existsByUserAndEvent(user, event);
+    }
+
+    @Override
+    public MemberEntity getMember(UserEntity user, EventEntity event) {
+        return memberRepository.findByUserAndEvent(user, event).orElseThrow(UnsupportedOperationException::new);
+    }
+
+    @Override
+    public MemberEntity createMember(UserEntity user, EventEntity event) {
+        final MemberEntity memberEntity = MemberEntity.builder()
+                .user(user)
+                .event(event)
+                .build();
+        return memberRepository.save(memberEntity);
+    }
+
+    @Override
+    public void removeMember(MemberEntity memberEntity) {
+        memberRepository.removeById(memberEntity.getId());
+    }
 
     @Override
     public Set<EventEntity> getEventsByTelegramId(int telegramId) {
@@ -61,6 +86,9 @@ public class MemberServiceImpl implements MemberService {
                 .event(member.getEvent())
                 .comfortDate(member.getComfortDate())
                 .comfortPlace(place)
+                .announceDate(member.getAnnounceDate())
+                .announceCount(member.getAnnounceCount())
+                .currentQuestion(member.getCurrentQuestion())
                 .build();
         return memberRepository.save(memberEntity);
     }
@@ -74,7 +102,58 @@ public class MemberServiceImpl implements MemberService {
                 .event(member.getEvent())
                 .comfortDate(datetime)
                 .comfortPlace(member.getComfortPlace())
+                .announceDate(member.getAnnounceDate())
+                .announceCount(member.getAnnounceCount())
+                .currentQuestion(member.getCurrentQuestion())
                 .build();
+        return memberRepository.save(memberEntity);
+    }
+
+    @Override
+    public MemberEntity setAnnounceDate(MemberEntity member, LocalDateTime date) {
+        MemberEntity memberEntity = MemberEntity.builder()
+                .id(member.getId())
+                .user(member.getUser())
+                .event(member.getEvent())
+                .comfortDate(member.getComfortDate())
+                .comfortPlace(member.getComfortPlace())
+                .announceDate(date)
+                .announceCount(member.getAnnounceCount())
+                .currentQuestion(member.getCurrentQuestion())
+                .build();
+
+        return memberRepository.save(memberEntity);
+    }
+
+    @Override
+    public MemberEntity setAnnounceCount(MemberEntity member, int count) {
+        MemberEntity memberEntity = MemberEntity.builder()
+                .id(member.getId())
+                .user(member.getUser())
+                .event(member.getEvent())
+                .comfortDate(member.getComfortDate())
+                .comfortPlace(member.getComfortPlace())
+                .announceDate(member.getAnnounceDate())
+                .announceCount(count)
+                .currentQuestion(member.getCurrentQuestion())
+                .build();
+
+        return memberRepository.save(memberEntity);
+    }
+
+    @Override
+    public MemberEntity setCurrentQuestion(MemberEntity member, EventQuestionEntity question) {
+        MemberEntity memberEntity = MemberEntity.builder()
+                .id(member.getId())
+                .user(member.getUser())
+                .event(member.getEvent())
+                .comfortDate(member.getComfortDate())
+                .comfortPlace(member.getComfortPlace())
+                .announceDate(member.getAnnounceDate())
+                .announceCount(member.getAnnounceCount())
+                .currentQuestion(question)
+                .build();
+
         return memberRepository.save(memberEntity);
     }
 

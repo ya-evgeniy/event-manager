@@ -42,6 +42,10 @@ public class MemberEntity {
 
     private LocalDateTime comfortDate;
 
+    private LocalDateTime announceDate;
+
+    private int announceCount;
+
     @ManyToOne
     @JoinColumn(name = "current_question", nullable = true)
     private EventQuestionEntity currentQuestion;

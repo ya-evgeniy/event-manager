@@ -7,11 +7,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.telegram.telegrambots.meta.api.objects.User;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
 public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 
     Set<MemberEntity> findAllByUser(UserEntity user);
+
+    boolean existsByUserAndEvent(UserEntity user, EventEntity event);
+
+    Optional<MemberEntity> findByUserAndEvent(UserEntity user, EventEntity event);
+
+    void removeById(long id);
 
 }
