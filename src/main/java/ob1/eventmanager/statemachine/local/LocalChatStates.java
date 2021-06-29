@@ -16,6 +16,7 @@ public enum LocalChatStates {
 
     MEMBER_INFO,
     MEMBER_PLACE,
+    MEMBER_PLACE_EDIT,
     MEMBER_DATE,
     MEMBER_QUESTION,
     MEMBER_CONFIRM,

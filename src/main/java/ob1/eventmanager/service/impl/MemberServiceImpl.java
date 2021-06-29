@@ -6,11 +6,11 @@ import ob1.eventmanager.entity.UserEntity;
 import ob1.eventmanager.repository.MemberRepository;
 import ob1.eventmanager.service.MemberService;
 import ob1.eventmanager.service.UserService;
+import ob1.eventmanager.utils.LocalDateParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,10 +18,14 @@ import java.util.stream.Collectors;
 public class MemberServiceImpl implements MemberService {
 
     @Autowired
-    private UserService userService;
+    private MemberRepository memberRepository;
 
     @Autowired
-    private MemberRepository memberRepository;
+    private LocalDateParser parser;
+
+    @Autowired
+    private UserService userService;
+
 
     @Override
     public Set<EventEntity> getEventsByTelegramId(int telegramId) {
@@ -42,6 +46,31 @@ public class MemberServiceImpl implements MemberService {
                 .filter(event -> event.getDate() != null)
                 .filter(event -> event.getDate().isAfter(now))
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public MemberEntity setComfortPlace(MemberEntity member, String place) {
+        MemberEntity memberEntity = MemberEntity.builder()
+                .id(member.getId())
+                .user(member.getUser())
+                .event(member.getEvent())
+                .comfortDate(member.getComfortDate())
+                .comfortPlace(place)
+                .build();
+        return memberRepository.save(memberEntity);
+    }
+
+    @Override
+    public MemberEntity setComfortDate(MemberEntity member, String date) {
+        final LocalDateTime datetime = parser.parse(date);
+        MemberEntity memberEntity = MemberEntity.builder()
+                .id(member.getId())
+                .user(member.getUser())
+                .event(member.getEvent())
+                .comfortDate(datetime)
+                .comfortPlace(member.getComfortPlace())
+                .build();
+        return memberRepository.save(memberEntity);
     }
 
 }
