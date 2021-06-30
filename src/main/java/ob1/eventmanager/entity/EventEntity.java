@@ -34,7 +34,7 @@ public class EventEntity {
     private long id;
 
     @Column(nullable = true)
-    private long chatId;
+    private Long chatId;
 
     @Column(nullable = true)
     private String name;
@@ -47,6 +47,9 @@ public class EventEntity {
 
     @Column(nullable = false)
     private boolean verified = false;
+
+    @Column(nullable = false)
+    private boolean completed = false;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = true)

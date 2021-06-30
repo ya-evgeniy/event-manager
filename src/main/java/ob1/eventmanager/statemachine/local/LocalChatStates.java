@@ -22,7 +22,16 @@ public enum LocalChatStates {
     MEMBER_DATE,
     MEMBER_DATE_EDIT,
     MEMBER_QUESTION,
-    MEMBER_CONFIRM;
+    MEMBER_CONFIRM,
+
+    EDIT_EVENT_SHOW,
+    EDIT_EVENT_NAME,
+    EDIT_EVENT_PLACE,
+    EDIT_EVENT_DATE,
+    EDIT_EVENT_TIME,
+    EDIT_EVENT_QUESTION,
+
+    ;
 
     public static Optional<LocalChatStates> getByName(String name) {
         if (name == null) return Optional.empty();

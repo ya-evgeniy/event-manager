@@ -69,7 +69,9 @@ public class EventServiceImpl implements EventService {
                 .date(event.getDate())
                 .place(event.getPlace())
                 .verified(event.isVerified())
+                .completed(event.isCompleted())
                 .owner(event.getOwner())
+                .ownerChatId(event.getOwnerChatId())
                 .category(event.getCategory())
                 .template(event.getTemplate())
                 .build();
@@ -86,7 +88,9 @@ public class EventServiceImpl implements EventService {
                 .date(event.getDate())
                 .place(event.getPlace())
                 .verified(event.isVerified())
+                .completed(event.isCompleted())
                 .owner(event.getOwner())
+                .ownerChatId(event.getOwnerChatId())
                 .category(event.getCategory())
                 .template(event.getTemplate())
                 .build();
@@ -105,7 +109,9 @@ public class EventServiceImpl implements EventService {
                 .date(datetime)
                 .place(event.getPlace())
                 .verified(event.isVerified())
+                .completed(event.isCompleted())
                 .owner(event.getOwner())
+                .ownerChatId(event.getOwnerChatId())
                 .category(event.getCategory())
                 .template(event.getTemplate())
                 .build();
@@ -122,7 +128,9 @@ public class EventServiceImpl implements EventService {
                 .date(event.getDate())
                 .place(place)
                 .verified(event.isVerified())
+                .completed(event.isCompleted())
                 .owner(event.getOwner())
+                .ownerChatId(event.getOwnerChatId())
                 .category(event.getCategory())
                 .template(event.getTemplate())
                 .build();
@@ -149,7 +157,9 @@ public class EventServiceImpl implements EventService {
                     .date(event.getDate())
                     .place(event.getPlace())
                     .verified(event.isVerified())
+                    .completed(event.isCompleted())
                     .owner(event.getOwner())
+                    .ownerChatId(event.getOwnerChatId())
                     .category(optCategory.get())
                     .template(event.getTemplate())
                     .build();
@@ -180,7 +190,9 @@ public class EventServiceImpl implements EventService {
                     .date(event.getDate())
                     .place(event.getPlace())
                     .verified(event.isVerified())
+                    .completed(event.isCompleted())
                     .owner(event.getOwner())
+                    .ownerChatId(event.getOwnerChatId())
                     .category(event.getCategory())
                     .template(optTemplate.get())
                     .build();
@@ -201,7 +213,9 @@ public class EventServiceImpl implements EventService {
                 .date(event.getDate())
                 .place(event.getPlace())
                 .verified(true)
+                .completed(event.isCompleted())
                 .owner(event.getOwner())
+                .ownerChatId(event.getOwnerChatId())
                 .category(event.getCategory())
                 .template(event.getTemplate())
                 .build();
