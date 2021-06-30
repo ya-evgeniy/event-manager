@@ -37,7 +37,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventEntity getEventById(long id) {
-        return eventRepository.getById(id);
+        return eventRepository.findById(id).orElseThrow(EventNotFoundException::new);
     }
 
     @Override
@@ -58,6 +58,23 @@ public class EventServiceImpl implements EventService {
     @Override
     public Optional<EventEntity> getGroupEvent(long chatId) {
         return eventRepository.getByChatId(chatId);
+    }
+
+    @Override
+    public EventEntity setEventChatId(EventEntity event, long chatId) {
+        final EventEntity eventEntity = EventEntity.builder()
+                .id(event.getId())
+                .chatId(chatId)
+                .name(event.getName())
+                .date(event.getDate())
+                .place(event.getPlace())
+                .verified(event.isVerified())
+                .owner(event.getOwner())
+                .category(event.getCategory())
+                .template(event.getTemplate())
+                .build();
+
+        return eventRepository.save(eventEntity);
     }
 
     @Override

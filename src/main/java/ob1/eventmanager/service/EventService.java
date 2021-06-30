@@ -16,6 +16,8 @@ public interface EventService {
 
     Optional<EventEntity> getGroupEvent(long chatId);
 
+    EventEntity setEventChatId(EventEntity event, long chatId);
+
     EventEntity setEventName(EventEntity event, String name);
 
     EventEntity setEventDate(EventEntity event, String date);

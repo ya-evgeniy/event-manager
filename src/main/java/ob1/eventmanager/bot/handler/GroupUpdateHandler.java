@@ -3,9 +3,14 @@ package ob1.eventmanager.bot.handler;
 import ob1.eventmanager.bot.TelegramBot;
 import ob1.eventmanager.bot.TelegramUpdateHandler;
 import ob1.eventmanager.entity.EventEntity;
+import ob1.eventmanager.entity.MemberEntity;
 import ob1.eventmanager.entity.UserEntity;
 import ob1.eventmanager.service.EventService;
+import ob1.eventmanager.service.MemberService;
+import ob1.eventmanager.service.MessageStateMachineService;
 import ob1.eventmanager.service.UserService;
+import ob1.eventmanager.statemachine.MessageStateMachine;
+import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -15,7 +20,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,6 +37,12 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MemberService memberService;
+
+    @Autowired
+    private MessageStateMachineService stateMachineService;
 
     @Override
     public void handle(Update update) {
@@ -113,7 +126,10 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
         }
 
         final UserEntity invitedUser = optInvitedUser.get();
-        final EventEntity selectedEvent = invitedUser.getSelectedEvent();
+        EventEntity selectedEvent = invitedUser.getSelectedEvent();
+
+        selectedEvent = eventService.setEventChatId(selectedEvent, chat.getId());
+        selectedEvent = eventService.verifyEvent(selectedEvent);
 
         String builder =
                 "Название: " + selectedEvent.getName() + "\n" +
@@ -131,6 +147,10 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
         final Chat chat = message.getChat();
         final String chatIdString = String.valueOf(chat.getId());
 
+        final Optional<EventEntity> optEvent = eventService.getGroupEvent(chat.getId());
+        if (optEvent.isEmpty()) return;
+        final EventEntity event = optEvent.get();
+
         final List<UserEntity> invitedUsers = message.getNewChatMembers().stream()
                 .filter(user -> !user.getIsBot())
                 .map(user -> {
@@ -138,6 +158,10 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
                     return optUserEntity.orElseGet(() -> userService.createUser(user.getId(), user.getUserName()));
                 })
                 .collect(Collectors.toList());
+
+        for (UserEntity invitedUser : invitedUsers) {
+            memberService.createMember(invitedUser, event);
+        }
 
         final List<UserEntity> invitedUsersWithChat = invitedUsers.stream()
                 .filter(bot::hasChat)
@@ -153,13 +177,15 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
             sendMessage.setParseMode(ParseMode.MARKDOWNV2);
 
             if (invitedUsersWithoutChat.size() == 1) {
-                sendMessage.setText(bot.getMarkdownMention(invitedUsersWithoutChat.get(0)) + ", приветствую тебя в чате мероприятия\\. Для участия заполни опросник у меня в ЛС");
+                final UserEntity user = invitedUsersWithoutChat.get(0);
+
+                sendMessage.setText(bot.getMarkdownMention(user) + ", приветствую тебя в чате мероприятия\\. Для участия заполни опросник у меня в ЛС");
             }
             else {
                 final StringBuilder builder = new StringBuilder();
 
-                for (UserEntity userEntity : invitedUsersWithoutChat) {
-                    builder.append(bot.getMarkdownMention(userEntity)).append(", ");
+                for (UserEntity user : invitedUsersWithoutChat) {
+                    builder.append(bot.getMarkdownMention(user)).append(", ");
                 }
 
                 builder.append("приветствую вас в чате мероприятия. Для участия заполните опросник у меня в ЛС");
@@ -167,6 +193,19 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
             }
 
             bot.send(sendMessage);
+        }
+
+        for (UserEntity user : invitedUsersWithChat) {
+            final MessageStateMachine<LocalChatStates> stateMachine = stateMachineService.createLocal(user);
+            if (stateMachine.getCurrentState() == LocalChatStates.WAIT_COMMANDS) {
+                stateMachine.setCurrentState(LocalChatStates.CHECK_ACTUAL_EVENTS);
+
+                final Map<String, Object> headers = new HashMap<>();
+                headers.put("userId", user.getTelegramId());
+                headers.put("chatId", String.valueOf(user.getChatId()));
+
+                stateMachine.handle(headers);
+            }
         }
     }
 

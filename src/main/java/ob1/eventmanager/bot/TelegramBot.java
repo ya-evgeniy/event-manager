@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChat;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.KickChatMember;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.LeaveChat;
 import org.telegram.telegrambots.meta.api.methods.pinnedmessages.PinChatMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -75,6 +76,14 @@ public class TelegramBot extends TelegramLongPollingBot {
         return send(sendMessage);
     }
 
+    public void edit(String text, String chatId, int messageId) {
+        final EditMessageText editMessage = new EditMessageText();
+        editMessage.setChatId(chatId);
+        editMessage.setMessageId(messageId);
+        editMessage.setText(text);
+        send(editMessage);
+    }
+
     public Message send(SendMessage message) {
         try {
             return execute(message);
@@ -118,6 +127,14 @@ public class TelegramBot extends TelegramLongPollingBot {
             return true;
         } catch (TelegramApiException e) {
             return false;
+        }
+    }
+
+    public void send(KickChatMember kick) {
+        try {
+            execute(kick);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 

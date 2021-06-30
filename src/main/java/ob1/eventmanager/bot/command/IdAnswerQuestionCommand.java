@@ -26,16 +26,20 @@ public class IdAnswerQuestionCommand implements LocalCommandHandler {
 
     @Override
     public void handle(MessageStateMachine<LocalChatStates> stateMachine, Map<String, Object> headers) {
-        String chatId = (String) headers.get("chatId");
+        final String chatId = (String) headers.get("chatId");
+
         if (stateMachine.getCurrentState() != LocalChatStates.WAIT_COMMANDS) {
             bot.send("Ты сейчас заполняешь что-то другое, заполни и попробуй заново", chatId);
             return;
         }
+
         final String[] commandArgs = (String[]) headers.get("commandArgs");
+
         if (commandArgs.length < 1) {
             bot.send("Что-то тут не так, попробуй заново", chatId);
             return;
         }
+
         long eventId;
         try {
             eventId = Long.parseLong(commandArgs[0]);
@@ -43,23 +47,32 @@ public class IdAnswerQuestionCommand implements LocalCommandHandler {
             bot.send("Попробуй отправить число", chatId);
             return;
         }
-        final EventEntity event = eventService.getEventById(eventId);
-        UserEntity user = (UserEntity) headers.get("user");
-        if (event == null) {
+
+        final EventEntity event;
+        try {
+            event = eventService.getEventById(eventId);
+        } catch (Exception e) {
             bot.send("Что-то пошло не так, попробуй еще раз", chatId);
             return;
         }
+
+        UserEntity user = (UserEntity) headers.get("user");
+
         UserEntity finalUser = user;
         boolean isMember = event.getMembers().stream()
                 .map(MemberEntity::getUser)
                 .map(UserEntity::getId)
                 .anyMatch(id -> id == finalUser.getId());
+
         if (!isMember) {
             bot.send("Кажется ты не участвуешь в мероприятии", chatId);
             return;
         }
+
         user = userService.setUserSelectedEvent(user, event);
         headers.put("user", user);
+        headers.put("event", event);
+
         stateMachine.setCurrentState(LocalChatStates.MEMBER_INFO);
         stateMachine.handle(headers);
     }

@@ -3,8 +3,10 @@ package ob1.eventmanager.bot.handler;
 import ob1.eventmanager.bot.TelegramUpdateHandler;
 import ob1.eventmanager.bot.ann.LocalCommand;
 import ob1.eventmanager.bot.command.LocalCommandHandler;
+import ob1.eventmanager.entity.EventEntity;
 import ob1.eventmanager.entity.UserEntity;
 import ob1.eventmanager.service.EventService;
+import ob1.eventmanager.service.MemberService;
 import ob1.eventmanager.service.MessageStateMachineService;
 import ob1.eventmanager.service.UserService;
 import ob1.eventmanager.statemachine.MessageStateMachine;
@@ -38,6 +40,9 @@ public class LocalUpdateHandler implements TelegramUpdateHandler {
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private MemberService memberService;
 
     private Map<String, LocalCommandHandler> localCommands = new HashMap<>();
 
@@ -101,6 +106,13 @@ public class LocalUpdateHandler implements TelegramUpdateHandler {
             headers.put("event", userEntity.getSelectedEvent());
         }
 
+        if (stateMachine.getCurrentState().ordinal() >= LocalChatStates.MEMBER_INFO.ordinal()
+                && stateMachine.getCurrentState().ordinal() <= LocalChatStates.MEMBER_CONFIRM.ordinal()) {
+            final EventEntity event = userEntity.getSelectedEvent();
+            headers.put("event", event);
+            headers.put("member", memberService.getMember(userEntity, event));
+        }
+
         stateMachine.handle(headers);
         stateMachineService.save((UserEntity) headers.get("user"), stateMachine);
     }
@@ -131,8 +143,16 @@ public class LocalUpdateHandler implements TelegramUpdateHandler {
             return;
         }
 
-        if (stateMachine.getCurrentState().ordinal() >= LocalChatStates.EVENT_CREATE.ordinal() && stateMachine.getCurrentState().ordinal() <= LocalChatStates.EVENT_CONFIRM.ordinal()) {
+        if (stateMachine.getCurrentState().ordinal() >= LocalChatStates.EVENT_CREATE.ordinal()
+                && stateMachine.getCurrentState().ordinal() <= LocalChatStates.EVENT_CONFIRM.ordinal()) {
             headers.put("event", userEntity.getSelectedEvent());
+        }
+
+        if (stateMachine.getCurrentState().ordinal() >= LocalChatStates.MEMBER_INFO.ordinal()
+                && stateMachine.getCurrentState().ordinal() <= LocalChatStates.MEMBER_CONFIRM.ordinal()) {
+            final EventEntity event = userEntity.getSelectedEvent();
+            headers.put("event", event);
+            headers.put("member", memberService.getMember(userEntity, event));
         }
 
         stateMachine.handle(headers);

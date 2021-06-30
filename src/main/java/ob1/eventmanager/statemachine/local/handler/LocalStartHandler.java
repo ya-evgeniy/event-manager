@@ -27,7 +27,8 @@ public class LocalStartHandler implements MessageStateMachineHandler<LocalChatSt
                             "\n" +
                             "Вот команды которыми ты можешь пользоваться:\n" +
                             "/new_event - Создать новое мероприятие\n" +
-                            "/actual_events - Посмотреть актуальные мероприятия",
+                            "/actual_events - Посмотреть актуальные мероприятия\n" +
+                            "/created_events - Посмотреть созданные мероприятия",
                     chatId
             );
             context.setNextState(LocalChatStates.CHECK_ACTUAL_EVENTS);

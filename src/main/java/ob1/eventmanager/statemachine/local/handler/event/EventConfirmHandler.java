@@ -64,25 +64,12 @@ public class EventConfirmHandler implements MessageStateMachineHandler<LocalChat
 
             editMessage.setText(messageTextBuilder.toString());
             editMessage.setReplyMarkup(KeyboardUtils.inlineOf(
-                    buttonOf("Отменить", "cancel"),
-                    buttonOf("Изменить", "edit")
+                    buttonOf("Отменить", "/cancel_event " + event.getId()),
+                    buttonOf("Изменить", "/edit_event " + event.getId())
             ));
 
             bot.send(editMessage);
-        } else if (previousState == LocalChatStates.EVENT_CONFIRM) {
-            if (callbackQuery.equals("cancel")) {
-                eventService.delete(event);
-
-                final EditMessageText editMessage = new EditMessageText();
-                editMessage.setMessageId(messageId);
-                editMessage.setChatId(chatId);
-                editMessage.setText("Мероприятие отменено!");
-                bot.send(editMessage);
-
-                context.setNextState(LocalChatStates.CHECK_ACTUAL_EVENTS);
-            } else if (callbackQuery.equals("edit")) {
-                throw new UnsupportedOperationException("not impl yet");
-            }
+            context.setNextState(LocalChatStates.WAIT_COMMANDS);
         } else {
             throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());
         }

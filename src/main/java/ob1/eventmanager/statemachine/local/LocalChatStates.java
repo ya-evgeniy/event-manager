@@ -20,6 +20,7 @@ public enum LocalChatStates {
     MEMBER_PLACE,
     MEMBER_PLACE_EDIT,
     MEMBER_DATE,
+    MEMBER_DATE_EDIT,
     MEMBER_QUESTION,
     MEMBER_CONFIRM;
 

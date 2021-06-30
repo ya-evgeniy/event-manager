@@ -36,6 +36,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public MemberEntity getMemberById(long id) {
+        return memberRepository.findById(id).orElseThrow(UnsupportedOperationException::new);
+    }
+
+    @Override
     public MemberEntity getMember(UserEntity user, EventEntity event) {
         return memberRepository.findByUserAndEvent(user, event).orElseThrow(UnsupportedOperationException::new);
     }

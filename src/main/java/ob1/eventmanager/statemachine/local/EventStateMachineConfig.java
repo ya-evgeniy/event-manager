@@ -35,6 +35,7 @@ class EventStateMachineConfig {
                 .node(LocalChatStates.MEMBER_PLACE, context.getBean("localMemberPlaceHandler", requiredType))
                 .node(LocalChatStates.MEMBER_PLACE_EDIT, context.getBean("localMemberPlaceEditHandler", requiredType))
                 .node(LocalChatStates.MEMBER_DATE, context.getBean("localMemberDateHandler", requiredType))
+                .node(LocalChatStates.MEMBER_DATE_EDIT, context.getBean("localMemberDateEditHandler", requiredType))
                 .node(LocalChatStates.MEMBER_QUESTION, context.getBean("localMemberQuestionHandler", requiredType))
                 .node(LocalChatStates.MEMBER_CONFIRM, context.getBean("localMemberConfirmHandler", requiredType))
                 .build();

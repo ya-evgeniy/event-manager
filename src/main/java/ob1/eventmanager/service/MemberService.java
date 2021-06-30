@@ -12,6 +12,8 @@ public interface MemberService {
 
     boolean hasMember(UserEntity user, EventEntity event);
 
+    MemberEntity getMemberById(long id);
+
     MemberEntity getMember(UserEntity user, EventEntity event);
 
     MemberEntity createMember(UserEntity user, EventEntity event);
@@ -31,5 +33,4 @@ public interface MemberService {
     MemberEntity setAnnounceCount(MemberEntity member, int count);
 
     MemberEntity setCurrentQuestion(MemberEntity member, EventQuestionEntity question);
-
 }

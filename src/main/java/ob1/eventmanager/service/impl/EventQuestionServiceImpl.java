@@ -17,6 +17,8 @@ public class EventQuestionServiceImpl implements EventQuestionService {
     @Override
     public List<EventQuestionEntity> getUnansweredQuestions(MemberEntity member) {
         final List<EventQuestionEntity> questions = new ArrayList<>(member.getEvent().getQuestions());
+        if (member.getAnswers() == null) return questions;
+
         final List<EventQuestionEntity> answeredQuestions = member.getAnswers()
                 .stream()
                 .map(MemberAnswerEntity::getQuestion)

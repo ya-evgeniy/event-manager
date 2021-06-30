@@ -1,6 +1,7 @@
 package ob1.eventmanager.utils;
 
 import ob1.eventmanager.entity.EventEntity;
+import ob1.eventmanager.entity.EventQuestionEntity;
 import ob1.eventmanager.entity.TemplateQuestionEntity;
 
 
@@ -16,7 +17,7 @@ public class EventInformation {
 
         StringBuilder str = new StringBuilder();
         str.append("Вопросы:");
-        for (TemplateQuestionEntity question : event.getTemplate().getQuestions()) {
+        for (EventQuestionEntity question : event.getQuestions()) {
             str.append("\n").append(question.getQuestion());
         }
 
