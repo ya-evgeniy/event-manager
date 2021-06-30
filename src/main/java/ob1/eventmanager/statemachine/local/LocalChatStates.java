@@ -11,6 +11,7 @@ public enum LocalChatStates {
     EVENT_NAME,
     EVENT_PLACE,
     EVENT_DATE,
+    EVENT_TIME,
     EVENT_CATEGORY,
     EVENT_TEMPLATE,
     EVENT_TEMPLATE_QUESTION,
@@ -21,6 +22,8 @@ public enum LocalChatStates {
     MEMBER_PLACE_EDIT,
     MEMBER_DATE,
     MEMBER_DATE_EDIT,
+    MEMBER_TIME,
+    MEMBER_TIME_EDIT,
     MEMBER_QUESTION,
     MEMBER_CONFIRM,
 
