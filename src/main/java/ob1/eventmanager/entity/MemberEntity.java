@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -36,6 +37,18 @@ public class MemberEntity {
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     private EventEntity event;
+
+    private String comfortPlace;
+
+    private LocalDateTime comfortDate;
+
+    private LocalDateTime announceDate;
+
+    private int announceCount;
+
+    @ManyToOne
+    @JoinColumn(name = "current_question", nullable = true)
+    private EventQuestionEntity currentQuestion;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)

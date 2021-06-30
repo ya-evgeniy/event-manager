@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MemberAnswerRepository extends JpaRepository<MemberAnswerEntity, Long> {
+
+    MemberAnswerEntity getById(Long aLong);//fixme как это сделать optional?
 }

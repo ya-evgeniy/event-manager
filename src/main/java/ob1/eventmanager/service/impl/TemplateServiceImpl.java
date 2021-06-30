@@ -56,7 +56,7 @@ public class TemplateServiceImpl implements TemplateService {
             }
         }
 
-        return eventService.getEvent(event.getChatId());
+        return eventService.getEventById(event.getId());
     }
 
     @Override

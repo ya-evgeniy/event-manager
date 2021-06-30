@@ -1,26 +1,23 @@
 package ob1.eventmanager.bot;
 
-import ob1.eventmanager.entity.EventEntity;
 import ob1.eventmanager.entity.UserEntity;
-import ob1.eventmanager.service.EventService;
-import ob1.eventmanager.service.UserService;
-import ob1.eventmanager.statemachine.MessageStateMachine;
-import ob1.eventmanager.statemachine.MessageStateMachineFactory;
-import ob1.eventmanager.statemachine.event.EventStates;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChat;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.KickChatMember;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.LeaveChat;
+import org.telegram.telegrambots.meta.api.methods.pinnedmessages.PinChatMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 
 @Component
@@ -32,16 +29,11 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Value("${telegram.bot.token}")
     private String botToken;
 
-    @Autowired
-    private MessageStateMachineFactory<EventStates> eventStatesMachineFactory;
+    @Autowired @Qualifier("telegramGroupUpdateHandler")
+    private TelegramUpdateHandler groupUpdateHandler;
 
-    @Autowired
-    private EventService eventService;
-
-    @Autowired
-    private UserService userService;
-
-    private final Map<String, MessageStateMachine<EventStates>> eventStateMachines = new HashMap<>();
+    @Autowired @Qualifier("telegramLocalUpdateHandler")
+    private TelegramUpdateHandler localMessageUpdateHandler;
 
     @Override
     public String getBotUsername() {
@@ -57,88 +49,48 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         System.out.println(update);
 
-        if (update.hasMessage()) {
-            handleMessage(update);
+        boolean isGroup = update.hasMessage() && update.getMessage().getChat().isGroupChat()
+                || update.hasCallbackQuery() && update.getCallbackQuery().getMessage().getChat().isGroupChat();
+
+        if (isGroup) {
+            groupUpdateHandler.handle(update);
         }
-        else if (update.hasCallbackQuery()) {
-            handleCallbackQuery(update);
-        }
-    }
-
-    private void handleMessage(Update update) {
-        final Message message = update.getMessage();
-        if (message.getFrom().getIsBot()) return;
-
-        final UserEntity user = userService.getUserByTelegramId(message.getFrom().getId());
-        final String stringChatId = String.valueOf(message.getChat().getId());
-
-        Map<String, Object> headers = new HashMap<>();
-        headers.put("text", message.getText());
-        headers.put("chatId", stringChatId);
-        headers.put("userId", message.getFrom().getId());
-        headers.put("messageId", message.getMessageId());
-
-        MessageStateMachine<EventStates> machine = eventStateMachines.get(stringChatId);
-        if (machine == null && message.getGroupchatCreated() != null && message.getGroupchatCreated()) {
-            final EventEntity event = eventService.newEvent(user, message.getChatId());
-            headers.put("event", event);
-
-            machine = eventStatesMachineFactory.create(stringChatId, EventStates.NEW);
-            eventStateMachines.put(stringChatId, machine);
-
-            machine.handle(headers);
-            return;
-        }
-
-        if (message.getText() == null || message.getText().isBlank()) return;
-        if (message.getFrom().getId() != user.getTelegramId()) return;
-
-        final EventEntity event = eventService.getEvent(message.getChatId());
-        headers.put("event", event);
-
-        if (machine != null) {
-            machine.handle(headers);
+        else {
+            localMessageUpdateHandler.handle(update);
         }
     }
 
-    private void handleCallbackQuery(Update update) {
-        final CallbackQuery callbackQuery = update.getCallbackQuery();
-
-        final UserEntity user = userService.getUserByTelegramId(callbackQuery.getFrom().getId());
-        final String stringChatId = String.valueOf(callbackQuery.getMessage().getChatId());
-
-        Map<String, Object> headers = new HashMap<>();
-        headers.put("chatId", stringChatId);
-        headers.put("userId", callbackQuery.getFrom().getId());
-        headers.put("callbackData", callbackQuery.getData());
-        headers.put("messageId", callbackQuery.getMessage().getMessageId());
-
-        final EventEntity event = eventService.getEvent(callbackQuery.getMessage().getChatId());
-        headers.put("event", event);
-
-        MessageStateMachine<EventStates> machine = eventStateMachines.get(stringChatId);
-        if (machine != null) {
-            machine.handle(headers);
+    public Optional<Integer> getSelfId() {
+        try {
+            return Optional.of(getMe().getId());
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            return Optional.empty();
         }
     }
 
-    public void send(String text, String id) {
+    public Message send(String text, String id) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setText(text);
         sendMessage.setChatId(id);
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        return send(sendMessage);
     }
 
-    public void send(SendMessage message) {
+    public void edit(String text, String chatId, int messageId) {
+        final EditMessageText editMessage = new EditMessageText();
+        editMessage.setChatId(chatId);
+        editMessage.setMessageId(messageId);
+        editMessage.setText(text);
+        send(editMessage);
+    }
+
+    public Message send(SendMessage message) {
         try {
-            execute(message);
+            return execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public void send(EditMessageText message) {
@@ -155,6 +107,39 @@ public class TelegramBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+
+    public void pinMessage(String chatId, Message message) {
+        try {
+            execute(new PinChatMessage(chatId, message.getMessageId()));
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean hasChat(UserEntity user) {
+        if (user.getChatId() == null) return false;
+
+        final GetChat getChat = new GetChat(String.valueOf(user.getChatId()));
+
+        try {
+            final Chat chat = execute(getChat);
+            return true;
+        } catch (TelegramApiException e) {
+            return false;
+        }
+    }
+
+    public void send(KickChatMember kick) {
+        try {
+            execute(kick);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getMarkdownMention(UserEntity user) {
+        return String.format("[%s](tg://user?id=%s)", user.getName(), user.getTelegramId());
     }
 
 }

@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EventQuestionRepository extends JpaRepository<EventQuestionEntity, Long> {
+    @Override
+    EventQuestionEntity getById(Long aLong);
 }
