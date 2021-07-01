@@ -53,7 +53,8 @@ public class EditEventShowHandler implements MessageStateMachineHandler<LocalCha
                 buttonOf("Изменить дату", "/edit_event_date " + event.getId()),
                 buttonOf("Изменить время", "/edit_event_time " + event.getId()),
                 buttonOf("Изменить вопросы", "/edit_event_questions " + event.getId()),
-                buttonOf("Получить статистику", "/get_event_stats " + event.getId()),
+                buttonOf("Получить краткую статистику", "/get_event_short_stats " + event.getId()),
+                buttonOf("Получить полную статистику", "/get_event_final_stats " + event.getId()),
                 buttonOf("Отменить мероприятие", "/cancel_event " + event.getId()),
                 buttonOf("Назад", "/manage_events")
         ));

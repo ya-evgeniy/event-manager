@@ -8,6 +8,7 @@ import ob1.eventmanager.repository.MemberRepository;
 import ob1.eventmanager.service.MemberService;
 import ob1.eventmanager.service.UserService;
 import ob1.eventmanager.utils.LocalDateParser;
+import ob1.eventmanager.utils.MemberStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -90,9 +91,11 @@ public class MemberServiceImpl implements MemberService {
                 .user(member.getUser())
                 .event(member.getEvent())
                 .comfortDate(member.getComfortDate())
+                .comfortTime(member.getComfortTime())
                 .comfortPlace(place)
                 .announceDate(member.getAnnounceDate())
                 .announceCount(member.getAnnounceCount())
+                .status(member.getStatus())
                 .currentQuestion(member.getCurrentQuestion())
                 .build();
         return memberRepository.save(memberEntity);
@@ -100,15 +103,35 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberEntity setComfortDate(MemberEntity member, String date) {
-        final LocalDateTime datetime = parser.parseDate(date);
+        final LocalDateTime comfortDate = parser.parseDate(date);
         MemberEntity memberEntity = MemberEntity.builder()
                 .id(member.getId())
                 .user(member.getUser())
                 .event(member.getEvent())
-                .comfortDate(datetime)
+                .comfortDate(comfortDate)
+                .comfortTime(member.getComfortTime())
                 .comfortPlace(member.getComfortPlace())
                 .announceDate(member.getAnnounceDate())
                 .announceCount(member.getAnnounceCount())
+                .status(member.getStatus())
+                .currentQuestion(member.getCurrentQuestion())
+                .build();
+        return memberRepository.save(memberEntity);
+    }
+
+    @Override
+    public MemberEntity setComfortTime(MemberEntity member, String time) {
+        final LocalDateTime comfortTime = parser.parseTime(time);
+        MemberEntity memberEntity = MemberEntity.builder()
+                .id(member.getId())
+                .user(member.getUser())
+                .event(member.getEvent())
+                .comfortDate(member.getComfortDate())
+                .comfortTime(comfortTime)
+                .comfortPlace(member.getComfortPlace())
+                .announceDate(member.getAnnounceDate())
+                .announceCount(member.getAnnounceCount())
+                .status(member.getStatus())
                 .currentQuestion(member.getCurrentQuestion())
                 .build();
         return memberRepository.save(memberEntity);
@@ -121,9 +144,11 @@ public class MemberServiceImpl implements MemberService {
                 .user(member.getUser())
                 .event(member.getEvent())
                 .comfortDate(member.getComfortDate())
+                .comfortTime(member.getComfortTime())
                 .comfortPlace(member.getComfortPlace())
                 .announceDate(date)
                 .announceCount(member.getAnnounceCount())
+                .status(member.getStatus())
                 .currentQuestion(member.getCurrentQuestion())
                 .build();
 
@@ -137,9 +162,29 @@ public class MemberServiceImpl implements MemberService {
                 .user(member.getUser())
                 .event(member.getEvent())
                 .comfortDate(member.getComfortDate())
+                .comfortTime(member.getComfortTime())
                 .comfortPlace(member.getComfortPlace())
                 .announceDate(member.getAnnounceDate())
                 .announceCount(count)
+                .status(member.getStatus())
+                .currentQuestion(member.getCurrentQuestion())
+                .build();
+
+        return memberRepository.save(memberEntity);
+    }
+
+    @Override
+    public MemberEntity setStatus(MemberEntity member, MemberStatus status) {
+        MemberEntity memberEntity = MemberEntity.builder()
+                .id(member.getId())
+                .user(member.getUser())
+                .event(member.getEvent())
+                .comfortDate(member.getComfortDate())
+                .comfortTime(member.getComfortTime())
+                .comfortPlace(member.getComfortPlace())
+                .announceDate(member.getAnnounceDate())
+                .announceCount(member.getAnnounceCount())
+                .status(status)
                 .currentQuestion(member.getCurrentQuestion())
                 .build();
 
@@ -153,9 +198,11 @@ public class MemberServiceImpl implements MemberService {
                 .user(member.getUser())
                 .event(member.getEvent())
                 .comfortDate(member.getComfortDate())
+                .comfortTime(member.getComfortTime())
                 .comfortPlace(member.getComfortPlace())
                 .announceDate(member.getAnnounceDate())
                 .announceCount(member.getAnnounceCount())
+                .status(member.getStatus())
                 .currentQuestion(question)
                 .build();
 
