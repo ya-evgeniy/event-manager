@@ -11,6 +11,7 @@ import ob1.eventmanager.service.MessageStateMachineService;
 import ob1.eventmanager.service.UserService;
 import ob1.eventmanager.statemachine.MessageStateMachine;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
+import ob1.eventmanager.utils.MemberStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -20,6 +21,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,7 +162,15 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
                 .collect(Collectors.toList());
 
         for (UserEntity invitedUser : invitedUsers) {
-            memberService.createMember(invitedUser, event);
+            if (memberService.hasMember(invitedUser, event)) {
+                MemberEntity member = memberService.getMember(invitedUser, event);
+                member = memberService.setStatus(member, MemberStatus.WAIT_PRIVATE_MESSAGE);
+                member = memberService.setAnnounceDate(member, null);
+                member = memberService.setAnnounceCount(member, 0);
+            }
+            else {
+                memberService.createMember(invitedUser, event);
+            }
         }
 
         final List<UserEntity> invitedUsersWithChat = invitedUsers.stream()
@@ -192,6 +202,11 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
                 sendMessage.setText(builder.toString());
             }
 
+            final LocalDateTime now = LocalDateTime.now();
+            for (UserEntity user : invitedUsersWithoutChat) {
+                final MemberEntity member = memberService.getMember(user, event);
+                memberService.setAnnounceDate(member, now);
+            }
             bot.send(sendMessage);
         }
 

@@ -51,7 +51,7 @@ public class MemberEntity {
     private int announceCount;
 
     @Column(nullable = false)
-    private MemberStatus status = MemberStatus.FILL_QUESTIONS;
+    private MemberStatus status = MemberStatus.WAIT_PRIVATE_MESSAGE;
 
     @ManyToOne
     @JoinColumn(name = "current_question", nullable = true)

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
+import java.util.Objects;
+
 import static ob1.eventmanager.utils.KeyboardUtils.buttonOf;
 
 @Component("localMemberPlaceHandler")
@@ -39,10 +41,10 @@ public class MemberPlaceHandler implements MessageStateMachineHandler<LocalChatS
             bot.send(editMessage);
 
         } else if (previousState == LocalChatStates.MEMBER_PLACE) {
-            if (callbackQuery.equals("confirm")) {
+            if (Objects.equals(callbackQuery, "confirm")) {
                 context.setNextState(LocalChatStates.MEMBER_DATE);
             }
-            else if (callbackQuery.equals("cancel")) {
+            else if (Objects.equals(callbackQuery, "cancel")) {
                 context.setNextState(LocalChatStates.MEMBER_PLACE_EDIT);
             }
             else {
