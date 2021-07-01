@@ -74,7 +74,6 @@ public class GetEventFinalStatsCommand implements LocalCommandHandler {
 
         try(StringWriter writer = new StringWriter();
             CSVWriter csvWriter = new CSVWriter(writer)) {
-            writer.write();
 
             final List<String> header = new ArrayList<>();
             header.add("ИД");
@@ -117,7 +116,7 @@ public class GetEventFinalStatsCommand implements LocalCommandHandler {
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(writer.toString().getBytes(StandardCharsets.UTF_8))) {
                 final SendDocument sendDocument = new SendDocument();
                 sendDocument.setChatId(chatId);
-                sendDocument.setDocument(new InputFile(inputStream, "statistics.csv"));
+                sendDocument.setDocument(new InputFile(inputStream, event.getName() + ".csv"));
                 bot.send(sendDocument);
             }
             catch (IOException e) {
