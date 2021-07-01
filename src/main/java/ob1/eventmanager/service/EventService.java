@@ -22,6 +22,8 @@ public interface EventService {
 
     EventEntity setEventDate(EventEntity event, String date);
 
+    EventEntity setEventTime(EventEntity event, String time);
+
     EventEntity setEventPlace(EventEntity event, String place);
 
     EventEntity setEventCategory(EventEntity event, String category);

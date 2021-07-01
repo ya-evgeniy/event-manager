@@ -3,14 +3,11 @@ package ob1.eventmanager.utils;
 import ob1.eventmanager.entity.EventEntity;
 import ob1.eventmanager.entity.EventQuestionAnswerEntity;
 import ob1.eventmanager.entity.EventQuestionEntity;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
-
-import static ob1.eventmanager.utils.KeyboardUtils.buttonOf;
 
 public class ObjectsToString {
 
@@ -25,9 +22,18 @@ public class ObjectsToString {
         );
     }
 
+    public static String dateDDMMYYYY(LocalDateTime date) {
+        return String.format(
+                "%02d.%02d.%04d",
+                date.getDayOfMonth(),
+                date.getMonthValue(),
+                date.getYear()
+        );
+    }
+
     public static String time(LocalDateTime date) {
         return String.format(
-                "%s:%s",
+                "%02d:%02d",
                 date.getHour(),
                 date.getMinute()
         );

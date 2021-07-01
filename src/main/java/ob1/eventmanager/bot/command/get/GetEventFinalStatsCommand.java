@@ -13,6 +13,7 @@ import ob1.eventmanager.exception.EventNotFoundException;
 import ob1.eventmanager.service.EventService;
 import ob1.eventmanager.statemachine.MessageStateMachine;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
+import ob1.eventmanager.utils.ObjectsToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
@@ -97,9 +98,9 @@ public class GetEventFinalStatsCommand implements LocalCommandHandler {
                 line.add(String.valueOf(member.getUser().getChatId()));
                 line.add(String.valueOf(member.getUser().getName()));
                 line.add(String.valueOf(member.getStatus()));
-                line.add(String.valueOf(member.getComfortPlace()));
-                line.add(String.valueOf(member.getComfortDate()));
-                line.add(String.valueOf(member.getComfortTime()));
+                line.add(member.getComfortPlace() == null ? "" : member.getComfortPlace());
+                line.add(member.getComfortDate() == null ? "" : ObjectsToString.dateDDMMYYYY(member.getComfortDate()));
+                line.add(member.getComfortTime() == null ? "" : ObjectsToString.time(member.getComfortTime()));
 
                 contQuestion: for (EventQuestionEntity question : questions) {
                     for (MemberAnswerEntity answer : member.getAnswers()) {

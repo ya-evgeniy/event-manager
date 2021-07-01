@@ -66,6 +66,7 @@ public class EventServiceImpl implements EventService {
                 .chatId(chatId)
                 .name(event.getName())
                 .date(event.getDate())
+                .time(event.getTime())
                 .place(event.getPlace())
                 .verified(event.isVerified())
                 .completed(event.isCompleted())
@@ -85,6 +86,7 @@ public class EventServiceImpl implements EventService {
                 .chatId(event.getChatId())
                 .name(name)
                 .date(event.getDate())
+                .time(event.getTime())
                 .place(event.getPlace())
                 .verified(event.isVerified())
                 .completed(event.isCompleted())
@@ -99,13 +101,36 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventEntity setEventDate(EventEntity event, String date) {
-        final LocalDateTime datetime = parser.parseDate(date);
+        final LocalDateTime eventDate = parser.parseDate(date);
 
         final EventEntity eventEntity = EventEntity.builder()
                 .id(event.getId())
                 .chatId(event.getChatId())
                 .name(event.getName())
-                .date(datetime)
+                .date(eventDate)
+                .time(event.getTime())
+                .place(event.getPlace())
+                .verified(event.isVerified())
+                .completed(event.isCompleted())
+                .owner(event.getOwner())
+                .ownerChatId(event.getOwnerChatId())
+                .category(event.getCategory())
+                .template(event.getTemplate())
+                .build();
+
+        return eventRepository.save(eventEntity);
+    }
+
+    @Override
+    public EventEntity setEventTime(EventEntity event, String time) {
+        final LocalDateTime eventTime = parser.parseTime(time);
+
+        final EventEntity eventEntity = EventEntity.builder()
+                .id(event.getId())
+                .chatId(event.getChatId())
+                .name(event.getName())
+                .date(event.getDate())
+                .time(eventTime)
                 .place(event.getPlace())
                 .verified(event.isVerified())
                 .completed(event.isCompleted())
@@ -125,6 +150,7 @@ public class EventServiceImpl implements EventService {
                 .chatId(event.getChatId())
                 .name(event.getName())
                 .date(event.getDate())
+                .time(event.getTime())
                 .place(place)
                 .verified(event.isVerified())
                 .completed(event.isCompleted())
@@ -154,6 +180,7 @@ public class EventServiceImpl implements EventService {
                     .chatId(event.getChatId())
                     .name(event.getName())
                     .date(event.getDate())
+                    .time(event.getTime())
                     .place(event.getPlace())
                     .verified(event.isVerified())
                     .completed(event.isCompleted())
@@ -187,6 +214,7 @@ public class EventServiceImpl implements EventService {
                     .chatId(event.getChatId())
                     .name(event.getName())
                     .date(event.getDate())
+                    .time(event.getTime())
                     .place(event.getPlace())
                     .verified(event.isVerified())
                     .completed(event.isCompleted())
@@ -210,6 +238,7 @@ public class EventServiceImpl implements EventService {
                 .chatId(event.getChatId())
                 .name(event.getName())
                 .date(event.getDate())
+                .time(event.getTime())
                 .place(event.getPlace())
                 .verified(true)
                 .completed(event.isCompleted())

@@ -43,6 +43,9 @@ public class EventEntity {
     private LocalDateTime date;
 
     @Column(nullable = true)
+    private LocalDateTime time;
+
+    @Column(nullable = true)
     private String place;
 
     @Column(nullable = false)
