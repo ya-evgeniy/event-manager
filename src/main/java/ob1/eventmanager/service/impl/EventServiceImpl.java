@@ -5,7 +5,6 @@ import ob1.eventmanager.entity.EventEntity;
 import ob1.eventmanager.entity.TemplateEntity;
 import ob1.eventmanager.entity.UserEntity;
 import ob1.eventmanager.exception.CategoryNotFoundException;
-import ob1.eventmanager.exception.EventAlreadyExistsException;
 import ob1.eventmanager.exception.EventNotFoundException;
 import ob1.eventmanager.exception.TemplateNotFoundException;
 import ob1.eventmanager.repository.CategoryRepository;
@@ -100,7 +99,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventEntity setEventDate(EventEntity event, String date) {
-        final LocalDateTime datetime = parser.parse(date);
+        final LocalDateTime datetime = parser.parseDate(date);
 
         final EventEntity eventEntity = EventEntity.builder()
                 .id(event.getId())

@@ -100,7 +100,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberEntity setComfortDate(MemberEntity member, String date) {
-        final LocalDateTime datetime = parser.parse(date);
+        final LocalDateTime datetime = parser.parseDate(date);
         MemberEntity memberEntity = MemberEntity.builder()
                 .id(member.getId())
                 .user(member.getUser())
