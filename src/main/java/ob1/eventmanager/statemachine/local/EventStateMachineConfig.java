@@ -47,7 +47,9 @@ class EventStateMachineConfig {
                 .node(LocalChatStates.EDIT_EVENT_PLACE, context.getBean("localEditEventPlaceHandler", requiredType))
                 .node(LocalChatStates.EDIT_EVENT_DATE, context.getBean("localEditEventDateHandler", requiredType))
                 .node(LocalChatStates.EDIT_EVENT_TIME, context.getBean("localEditEventTimeHandler", requiredType))
-                .node(LocalChatStates.EDIT_EVENT_QUESTION, context.getBean("localEditEventQuestionHandler", requiredType))
+                .node(LocalChatStates.EDIT_EVENT_CATEGORY, context.getBean("localEditEventCategoryHandler", requiredType))
+                .node(LocalChatStates.EDIT_EVENT_TEMPLATE, context.getBean("localEditEventTemplateHandler", requiredType))
+                .node(LocalChatStates.EDIT_EVENT_TEMPLATE_QUESTION, context.getBean("localEditEventTemplateQuestionsHandler", requiredType))
 
                 .build();
     }
