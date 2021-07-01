@@ -35,7 +35,7 @@ public class EditEventTimeHandler implements MessageStateMachineHandler<LocalCha
             editMessageText.enableHtml(true);
             editMessageText.setText(String.format("Введите новое время для мероприятия" +
                     "\nПример: 16:42" +
-                    "\n<b>Текущее время:</b> %s", ObjectsToString.time(event.getDate())));
+                    "\n<b>Текущее время:</b> %s", ObjectsToString.time(event.getTime())));
             bot.send(editMessageText);
         } else if (previousState == LocalChatStates.EDIT_EVENT_TIME) {
 

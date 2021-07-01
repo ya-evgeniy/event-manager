@@ -44,7 +44,7 @@ public class ObjectsToString {
         messageTextBuilder.append("Название: ").append(event.getName()).append('\n');
         messageTextBuilder.append("Место: ").append(event.getPlace()).append('\n');
         messageTextBuilder.append("Дата: ").append(ObjectsToString.date(event.getDate())).append('\n');
-        messageTextBuilder.append("Время: ").append(ObjectsToString.time(event.getDate())).append('\n');
+        messageTextBuilder.append("Время: ").append(ObjectsToString.time(event.getTime())).append('\n');
         messageTextBuilder.append('\n');
 
         messageTextBuilder.append("Вопросы для участников:");

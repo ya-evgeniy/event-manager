@@ -43,7 +43,7 @@ public class EditEventDateHandler implements MessageStateMachineHandler<LocalCha
             context.getHeaders().put("event", event);
 
             bot.send("Новая дата для мероприятия: " + text, chatId);
-            context.setNextState(LocalChatStates.EDIT_EVENT_TIME);
+            context.setNextState(LocalChatStates.EDIT_EVENT_SHOW);
         }
         else {
             throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());
