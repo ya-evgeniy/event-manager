@@ -106,6 +106,11 @@ public class LocalUpdateHandler implements TelegramUpdateHandler {
             headers.put("event", userEntity.getSelectedEvent());
         }
 
+        if (stateMachine.getCurrentState().ordinal() >= LocalChatStates.EDIT_EVENT_SHOW.ordinal()
+                && stateMachine.getCurrentState().ordinal() <= LocalChatStates.EDIT_EVENT_QUESTION.ordinal()) {
+            headers.put("event", userEntity.getSelectedEvent());
+        }
+
         if (stateMachine.getCurrentState().ordinal() >= LocalChatStates.MEMBER_INFO.ordinal()
                 && stateMachine.getCurrentState().ordinal() <= LocalChatStates.MEMBER_CONFIRM.ordinal()) {
             final EventEntity event = userEntity.getSelectedEvent();
@@ -145,6 +150,11 @@ public class LocalUpdateHandler implements TelegramUpdateHandler {
 
         if (stateMachine.getCurrentState().ordinal() >= LocalChatStates.EVENT_CREATE.ordinal()
                 && stateMachine.getCurrentState().ordinal() <= LocalChatStates.EVENT_CONFIRM.ordinal()) {
+            headers.put("event", userEntity.getSelectedEvent());
+        }
+
+        if (stateMachine.getCurrentState().ordinal() >= LocalChatStates.EDIT_EVENT_SHOW.ordinal()
+                && stateMachine.getCurrentState().ordinal() <= LocalChatStates.EDIT_EVENT_QUESTION.ordinal()) {
             headers.put("event", userEntity.getSelectedEvent());
         }
 

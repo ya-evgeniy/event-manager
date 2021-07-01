@@ -64,6 +64,7 @@ public class EditEventNameCommand implements LocalCommandHandler {
         }
 
         userService.setUserSelectedEvent(user, event);
+        headers.put("event", event);
         stateMachine.setCurrentState(LocalChatStates.EDIT_EVENT_NAME);
         stateMachine.handle(headers);
     }

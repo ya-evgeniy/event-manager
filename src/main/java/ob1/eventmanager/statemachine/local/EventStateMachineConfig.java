@@ -38,6 +38,14 @@ class EventStateMachineConfig {
                 .node(LocalChatStates.MEMBER_DATE_EDIT, context.getBean("localMemberDateEditHandler", requiredType))
                 .node(LocalChatStates.MEMBER_QUESTION, context.getBean("localMemberQuestionHandler", requiredType))
                 .node(LocalChatStates.MEMBER_CONFIRM, context.getBean("localMemberConfirmHandler", requiredType))
+
+                .node(LocalChatStates.EDIT_EVENT_SHOW, context.getBean("localEditEventShowHandler", requiredType))
+                .node(LocalChatStates.EDIT_EVENT_NAME, context.getBean("localEditEventNameHandler", requiredType))
+                .node(LocalChatStates.EDIT_EVENT_PLACE, context.getBean("localEditEventPlaceHandler", requiredType))
+                .node(LocalChatStates.EDIT_EVENT_DATE, context.getBean("localEditEventDateHandler", requiredType))
+                .node(LocalChatStates.EDIT_EVENT_TIME, context.getBean("localEditEventTimeHandler", requiredType))
+                .node(LocalChatStates.EDIT_EVENT_QUESTION, context.getBean("localEditEventQuestionHandler", requiredType))
+
                 .build();
     }
 
