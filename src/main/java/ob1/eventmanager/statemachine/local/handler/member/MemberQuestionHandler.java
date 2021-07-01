@@ -48,7 +48,7 @@ public class MemberQuestionHandler implements MessageStateMachineHandler<LocalCh
         MemberEntity member = context.get("member");
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.MEMBER_DATE_EDIT) {
+        if (previousState == LocalChatStates.MEMBER_TIME || previousState == LocalChatStates.MEMBER_TIME_EDIT) {
             final Optional<EventQuestionEntity> optUnansweredQuestion = eventQuestionService.getUnansweredQuestion(member);
             if (optUnansweredQuestion.isEmpty()) {
                 context.setNextState(LocalChatStates.MEMBER_CONFIRM);

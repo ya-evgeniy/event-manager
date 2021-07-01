@@ -2,6 +2,7 @@ package ob1.eventmanager.statemachine.local.handler.event;
 
 import ob1.eventmanager.bot.TelegramBot;
 import ob1.eventmanager.entity.EventEntity;
+import ob1.eventmanager.exception.IncorrectDateFormatException;
 import ob1.eventmanager.service.EventService;
 import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
@@ -9,8 +10,8 @@ import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("localEventNameHandler")
-public class EventNameHandler implements MessageStateMachineHandler<LocalChatStates> {
+@Component("localEventTimeHandler")
+public class EventTimeHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
     private TelegramBot bot;
@@ -25,15 +26,19 @@ public class EventNameHandler implements MessageStateMachineHandler<LocalChatSta
         final String chatId = context.get("chatId");
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.EVENT_CREATE) {
-            bot.send("Что ж, приступим.\nВведите название вашего мероприятия.", chatId);
+        if (previousState == LocalChatStates.EVENT_DATE) {
+            bot.send("Напишите время мероприятия\nПример: 16:42 или 16.42 или 16 42", chatId);
         }
-        else if (previousState == LocalChatStates.EVENT_NAME) {
-            event = eventService.setEventName(event, text);
-            context.getHeaders().put("event", event);
+        else if (previousState == LocalChatStates.EVENT_TIME) {
+            try {
+                event = eventService.setEventTime(event, text);
+                context.getHeaders().put("event", event);
 
-            context.setNextState(LocalChatStates.EVENT_PLACE);
-            bot.send(text + " - отличное название!", chatId);
+                bot.send("Мероприятие пройдет в " + text, chatId);
+                context.setNextState(LocalChatStates.EVENT_CATEGORY);
+            } catch (IncorrectDateFormatException e) {
+                bot.send("Некоректная дата", chatId);
+            }
         }
         else {
             throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());

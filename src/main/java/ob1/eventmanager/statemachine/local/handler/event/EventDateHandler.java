@@ -26,16 +26,17 @@ public class EventDateHandler implements MessageStateMachineHandler<LocalChatSta
         final String chatId = context.get("chatId");
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.EVENT_NAME) {
-            bot.send("Напишите дату и время мероприятия в формате hh.mm.yyyy hh:mm", chatId);
+        if (previousState == LocalChatStates.EVENT_PLACE) {
+            bot.send("Напишите дату мероприятия" +
+                    "\nПример: 25.05.2021 или 25 мая 2021 (год писать не обязательно, возьмется текущий)", chatId);
         }
         else if (previousState == LocalChatStates.EVENT_DATE) {
             try {
                 event = eventService.setEventDate(event, text);
                 context.getHeaders().put("event", event);
 
-                bot.send("Предупредите людей, чтобы на: " + text + " ничего не планировали", chatId);
-                context.setNextState(LocalChatStates.EVENT_PLACE);
+                bot.send("Дата мероприятия: " + text, chatId);
+                context.setNextState(LocalChatStates.EVENT_TIME);
             } catch (IncorrectDateFormatException e) {
                 bot.send("Некоректная дата", chatId);
             }

@@ -35,7 +35,7 @@ public class EventCategoryHandler implements MessageStateMachineHandler<LocalCha
         final EditMessageText editMessage = new EditMessageText();
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.EVENT_PLACE) {
+        if (previousState == LocalChatStates.EVENT_TIME) {
             final SendMessage sendMessage = new SendMessage();
             sendMessage.setText("Выберите категорию, к которой относится ваше мероприятие:");
             sendMessage.setChatId(chatId);

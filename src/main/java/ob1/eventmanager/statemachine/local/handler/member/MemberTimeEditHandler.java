@@ -8,10 +8,9 @@ import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-@Component("localMemberDateEditHandler")
-public class MemberDateEditHandler implements MessageStateMachineHandler<LocalChatStates> {
+@Component("localMemberTimeEditHandler")
+public class MemberTimeEditHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
     private TelegramBot bot;
@@ -27,20 +26,19 @@ public class MemberDateEditHandler implements MessageStateMachineHandler<LocalCh
         MemberEntity member = context.get("member");
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.MEMBER_DATE) {
-            bot.edit("Введите дату, которая вас устраивает" +
-                    "\nПример: 25.05.2021 или 25 мая 2021 (год писать не обязательно, возьмется текущий)", chatId, messageId);
+        if (previousState == LocalChatStates.MEMBER_TIME) {
+            bot.edit("Напишите время мероприятия\nПример: 16:42", chatId, messageId);
         }
-        else if (previousState == LocalChatStates.MEMBER_DATE_EDIT) {
+        else if (previousState == LocalChatStates.MEMBER_TIME_EDIT) {
             try {
-                member = memberService.setComfortDate(member, text);
+                member = memberService.setComfortTime(member, text);
                 context.getHeaders().put("member", member);
             } catch (Exception e) {
                 bot.send("Неверный формат", chatId);
                 return;
             }
 
-            context.setNextState(LocalChatStates.MEMBER_TIME);
+            context.setNextState(LocalChatStates.MEMBER_QUESTION);
         } else {
             throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());
         }

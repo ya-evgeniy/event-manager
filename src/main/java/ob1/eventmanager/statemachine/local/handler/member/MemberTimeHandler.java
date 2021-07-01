@@ -14,8 +14,8 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 
 import java.util.Objects;
 
-@Component("localMemberDateHandler")
-public class MemberDateHandler implements MessageStateMachineHandler<LocalChatStates> {
+@Component("localMemberTimeHandler")
+public class MemberTimeHandler implements MessageStateMachineHandler<LocalChatStates> {
 
     @Autowired
     private TelegramBot bot;
@@ -27,11 +27,11 @@ public class MemberDateHandler implements MessageStateMachineHandler<LocalChatSt
         final String chatId = context.get("chatId");
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.MEMBER_PLACE) {
+        if (previousState == LocalChatStates.MEMBER_DATE || previousState == LocalChatStates.MEMBER_DATE_EDIT) {
             final EditMessageText editMessage = new EditMessageText();
             editMessage.setChatId(chatId);
             editMessage.setMessageId(messageId);
-            editMessage.setText(String.format("Мероприятие начнется %s", event.getDate()));
+            editMessage.setText(String.format("Мероприятие начнется в %s", ObjectsToString.time(event.getDate())));
 
             editMessage.setReplyMarkup(KeyboardUtils.inlineOf(
                     KeyboardUtils.buttonOf("Устраивает", "success"),
@@ -39,24 +39,14 @@ public class MemberDateHandler implements MessageStateMachineHandler<LocalChatSt
             ));
 
             bot.send(editMessage);
-        } else if (previousState == LocalChatStates.MEMBER_PLACE_EDIT) {
-            final SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(chatId);
-            sendMessage.setText(String.format("Мероприятие начнется %s", ObjectsToString.date(event.getDate())));
-
-            sendMessage.setReplyMarkup(KeyboardUtils.inlineOf(
-                    KeyboardUtils.buttonOf("Устраивает", "success"),
-                    KeyboardUtils.buttonOf("Не устраивает", "cancel")
-            ));
-
-            bot.send(sendMessage);
-        } else if (previousState == LocalChatStates.MEMBER_DATE) {
+        }
+        else if (previousState == LocalChatStates.MEMBER_TIME) {
             final String callbackData = context.get("callbackData");
             if (Objects.equals(callbackData, "success")) {
-                context.setNextState(LocalChatStates.MEMBER_TIME);
+                context.setNextState(LocalChatStates.MEMBER_QUESTION);
             }
             else if (Objects.equals(callbackData, "cancel")) {
-                context.setNextState(LocalChatStates.MEMBER_DATE_EDIT);
+                context.setNextState(LocalChatStates.MEMBER_TIME_EDIT);
             }
             else {
                 throw new UnsupportedOperationException(callbackData);
