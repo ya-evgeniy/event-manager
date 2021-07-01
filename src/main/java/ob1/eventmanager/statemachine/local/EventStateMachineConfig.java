@@ -26,6 +26,7 @@ class EventStateMachineConfig {
                 .node(LocalChatStates.EVENT_NAME, context.getBean("localEventNameHandler", requiredType))
                 .node(LocalChatStates.EVENT_PLACE, context.getBean("localEventPlaceHandler", requiredType))
                 .node(LocalChatStates.EVENT_DATE, context.getBean("localEventDateHandler", requiredType))
+                .node(LocalChatStates.EVENT_TIME, context.getBean("localEventTimeHandler", requiredType))
                 .node(LocalChatStates.EVENT_CATEGORY, context.getBean("localEventCategoryHandler", requiredType))
                 .node(LocalChatStates.EVENT_TEMPLATE, context.getBean("localEventTemplateHandler", requiredType))
                 .node(LocalChatStates.EVENT_TEMPLATE_QUESTION, context.getBean("localEventTemplateQuestionHandler", requiredType))
@@ -36,6 +37,8 @@ class EventStateMachineConfig {
                 .node(LocalChatStates.MEMBER_PLACE_EDIT, context.getBean("localMemberPlaceEditHandler", requiredType))
                 .node(LocalChatStates.MEMBER_DATE, context.getBean("localMemberDateHandler", requiredType))
                 .node(LocalChatStates.MEMBER_DATE_EDIT, context.getBean("localMemberDateEditHandler", requiredType))
+                .node(LocalChatStates.MEMBER_TIME, context.getBean("localMemberTimeHandler", requiredType))
+                .node(LocalChatStates.MEMBER_TIME_EDIT, context.getBean("localMemberTimeEditHandler", requiredType))
                 .node(LocalChatStates.MEMBER_QUESTION, context.getBean("localMemberQuestionHandler", requiredType))
                 .node(LocalChatStates.MEMBER_CONFIRM, context.getBean("localMemberConfirmHandler", requiredType))
 
