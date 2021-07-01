@@ -35,6 +35,7 @@ public class EditEventCategoryHandler implements MessageStateMachineHandler<Loca
         final String text = context.get("text");
         final String chatId = context.get("chatId");
         final int messageId = context.get("messageId");
+        final String callbackData = context.get("callbackData");
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.WAIT_COMMANDS) {
@@ -45,7 +46,10 @@ public class EditEventCategoryHandler implements MessageStateMachineHandler<Loca
             sendMessage.setReplyMarkup(categoryKeyboardMarkup);
             bot.send(sendMessage);
         } else if (previousState == LocalChatStates.EDIT_EVENT_CATEGORY) {
-            final String callbackData = context.get("callbackData");
+            if (callbackData == null) {
+                bot.send("Выбери из того что есть", chatId);
+                return;
+            }
             if (Objects.equals(callbackData, "cancel")) {
                 context.setNextState(LocalChatStates.EDIT_EVENT_SHOW);
                 return;

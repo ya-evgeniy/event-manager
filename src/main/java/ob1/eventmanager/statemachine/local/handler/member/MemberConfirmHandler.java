@@ -52,6 +52,10 @@ public class MemberConfirmHandler implements MessageStateMachineHandler<LocalCha
 
             bot.send(editMessage);
         } else if (previousState == LocalChatStates.MEMBER_CONFIRM) {
+            if (callbackData == null) {
+                bot.send("Выбери из того что есть", chatId);
+                return;
+            }
             if (Objects.equals(callbackData, "success")) {
                 final EditMessageText editMessage = new EditMessageText();
                 editMessage.setChatId(chatId);

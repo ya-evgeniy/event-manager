@@ -38,6 +38,10 @@ public class EditEventDateHandler implements MessageStateMachineHandler<LocalCha
                     "\n<b>Текущая дата:</b> %s", ObjectsToString.date(event.getDate())));
             bot.send(sendMessage);
         } else if (previousState == LocalChatStates.EDIT_EVENT_DATE) {
+            if (text == null) {
+                bot.send("Напиши ответ текстом", chatId);
+                return;
+            }
 
             event = eventService.setEventDate(event, text);
             context.getHeaders().put("event", event);

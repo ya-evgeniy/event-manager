@@ -29,6 +29,10 @@ public class EventNameHandler implements MessageStateMachineHandler<LocalChatSta
             bot.send("Что ж, приступим.\nВведи название своего мероприятия.", chatId);
         }
         else if (previousState == LocalChatStates.EVENT_NAME) {
+            if (text == null) {
+                bot.send("Напиши ответ текстом", chatId);
+                return;
+            }
             event = eventService.setEventName(event, text);
             context.getHeaders().put("event", event);
 

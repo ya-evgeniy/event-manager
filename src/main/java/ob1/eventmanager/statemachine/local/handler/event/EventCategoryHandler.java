@@ -32,6 +32,7 @@ public class EventCategoryHandler implements MessageStateMachineHandler<LocalCha
         EventEntity event = context.get("event");
         final String chatId = context.get("chatId");
         final SendMessage sendMessage1 = new SendMessage();
+        final String callbackData = context.get("callbackData");
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.EVENT_TIME) {
@@ -42,7 +43,10 @@ public class EventCategoryHandler implements MessageStateMachineHandler<LocalCha
             sendMessage.setReplyMarkup(categoryKeyboardMarkup);
             bot.send(sendMessage);
         } else if (previousState == LocalChatStates.EVENT_CATEGORY) {
-            final String callbackData = context.get("callbackData");
+            if (callbackData == null) {
+                bot.send("Выбери из того что есть", chatId);
+                return;
+            }
             try {
                 event = eventService.setEventCategory(event, callbackData);
                 context.getHeaders().put("event", event);

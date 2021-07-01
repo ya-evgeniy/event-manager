@@ -30,6 +30,10 @@ public class EventTimeHandler implements MessageStateMachineHandler<LocalChatSta
             bot.send("Напиши время мероприятия\nПример: 16:42 или 16.42 или 16 42", chatId);
         }
         else if (previousState == LocalChatStates.EVENT_TIME) {
+            if (text == null) {
+                bot.send("Напиши ответ текстом", chatId);
+                return;
+            }
             try {
                 event = eventService.setEventTime(event, text);
                 context.getHeaders().put("event", event);

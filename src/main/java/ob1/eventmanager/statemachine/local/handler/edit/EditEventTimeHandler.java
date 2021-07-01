@@ -37,6 +37,10 @@ public class EditEventTimeHandler implements MessageStateMachineHandler<LocalCha
                     "\n<b>Текущее время:</b> %s", ObjectsToString.time(event.getTime())));
             bot.send(sendMessage);
         } else if (previousState == LocalChatStates.EDIT_EVENT_TIME) {
+            if (text == null) {
+                bot.send("Напиши ответ текстом", chatId);
+                return;
+            }
 
             event = eventService.setEventTime(event, text);
             context.getHeaders().put("event", event);

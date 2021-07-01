@@ -32,6 +32,10 @@ public class MemberDateEditHandler implements MessageStateMachineHandler<LocalCh
                     "\nПример: 25.05.2021 или 25 мая 2021 (год писать не обязательно, возьмется текущий)", chatId, messageId);
         }
         else if (previousState == LocalChatStates.MEMBER_DATE_EDIT) {
+            if (text == null) {
+                bot.send("Напиши ответ текстом", chatId);
+                return;
+            }
             try {
                 member = memberService.setComfortDate(member, text);
                 context.getHeaders().put("member", member);

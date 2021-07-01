@@ -31,6 +31,10 @@ public class EventDateHandler implements MessageStateMachineHandler<LocalChatSta
                     "\nПример: 25.05.2021 или 25 мая 2021 (год писать не обязательно, возьмется текущий)", chatId);
         }
         else if (previousState == LocalChatStates.EVENT_DATE) {
+            if (text == null) {
+                bot.send("Напиши ответ текстом", chatId);
+                return;
+            }
             try {
                 event = eventService.setEventDate(event, text);
                 context.getHeaders().put("event", event);

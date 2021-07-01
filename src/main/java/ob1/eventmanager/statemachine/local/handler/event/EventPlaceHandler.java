@@ -28,6 +28,10 @@ public class EventPlaceHandler implements MessageStateMachineHandler<LocalChatSt
         if (previousState == LocalChatStates.EVENT_NAME) {
             bot.send("Где будет проходить меропроиятие?", chatId);
         } else if (previousState == LocalChatStates.EVENT_PLACE) {
+            if (text == null) {
+                bot.send("Напиши ответ текстом", chatId);
+                return;
+            }
             event = eventService.setEventPlace(event, text);
             context.getHeaders().put("event", event);
 

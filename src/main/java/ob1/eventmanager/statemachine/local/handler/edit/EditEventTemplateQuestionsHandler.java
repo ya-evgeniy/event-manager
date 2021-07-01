@@ -41,6 +41,7 @@ public class EditEventTemplateQuestionsHandler implements MessageStateMachineHan
         final String text = context.get("text");
         final String chatId = context.get("chatId");
         final int messageId = context.get("messageId");
+        final String callbackData = context.get("callbackData");
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.EDIT_EVENT_TEMPLATE) {
@@ -58,7 +59,11 @@ public class EditEventTemplateQuestionsHandler implements MessageStateMachineHan
                     KeyboardUtils.buttonOf("Отменить", "cancel")));
             bot.send(sendMessage);
         } else if (previousState == LocalChatStates.EDIT_EVENT_TEMPLATE_QUESTION) {
-            final String callbackData = context.get("callbackData");
+
+            if (callbackData == null) {
+                bot.send("Выбери из того что есть", chatId);
+                return;
+            }
             if (Objects.equals(callbackData, "cancel")) {
                 context.setNextState(LocalChatStates.EDIT_EVENT_SHOW);
             } else if (Objects.equals(callbackData, "success")) {

@@ -35,6 +35,10 @@ public class EditEventPlaceHandler implements MessageStateMachineHandler<LocalCh
             bot.send(sendMessage);
         } else if (previousState == LocalChatStates.EDIT_EVENT_PLACE) {
 
+            if (text == null) {
+                bot.send("Напиши ответ текстом", chatId);
+                return;
+            }
             event = eventService.setEventPlace(event, text);
             context.getHeaders().put("event", event);
 

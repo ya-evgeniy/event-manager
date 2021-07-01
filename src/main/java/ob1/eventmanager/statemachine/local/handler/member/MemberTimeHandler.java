@@ -25,6 +25,7 @@ public class MemberTimeHandler implements MessageStateMachineHandler<LocalChatSt
         EventEntity event = context.get("event");
         final Integer messageId = context.get("messageId");
         final String chatId = context.get("chatId");
+        final String callbackData = context.get("callbackData");
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.MEMBER_DATE || previousState == LocalChatStates.MEMBER_DATE_EDIT) {
@@ -41,7 +42,10 @@ public class MemberTimeHandler implements MessageStateMachineHandler<LocalChatSt
             bot.send(editMessage);
         }
         else if (previousState == LocalChatStates.MEMBER_TIME) {
-            final String callbackData = context.get("callbackData");
+            if (callbackData == null) {
+                bot.send("Выбери из того что есть", chatId);
+                return;
+            }
             if (Objects.equals(callbackData, "success")) {
                 context.setNextState(LocalChatStates.MEMBER_QUESTION);
             }

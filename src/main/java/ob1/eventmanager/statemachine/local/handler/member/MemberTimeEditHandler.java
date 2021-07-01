@@ -30,6 +30,10 @@ public class MemberTimeEditHandler implements MessageStateMachineHandler<LocalCh
             bot.edit("Напиши время мероприятия\nПример: 16:42", chatId, messageId);
         }
         else if (previousState == LocalChatStates.MEMBER_TIME_EDIT) {
+            if (text == null) {
+                bot.send("Напиши ответ текстом", chatId);
+                return;
+            }
             try {
                 member = memberService.setComfortTime(member, text);
                 context.getHeaders().put("member", member);

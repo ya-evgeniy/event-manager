@@ -41,6 +41,10 @@ public class MemberPlaceHandler implements MessageStateMachineHandler<LocalChatS
             bot.send(editMessage);
 
         } else if (previousState == LocalChatStates.MEMBER_PLACE) {
+            if (callbackQuery == null) {
+                bot.send("Выбери из того что есть", chatId);
+                return;
+            }
             if (Objects.equals(callbackQuery, "confirm")) {
                 context.setNextState(LocalChatStates.MEMBER_DATE);
             }
