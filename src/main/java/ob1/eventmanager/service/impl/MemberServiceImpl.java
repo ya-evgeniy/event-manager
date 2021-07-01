@@ -43,7 +43,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberEntity getMember(UserEntity user, EventEntity event) {
-        return memberRepository.findByUserAndEvent(user, event).orElseThrow(UnsupportedOperationException::new);
+        return memberRepository.findByUserAndEvent(user, event).orElseThrow(() -> {
+            throw new UnsupportedOperationException(user.getId() + " " + event.getId());
+        });
     }
 
     @Override
@@ -51,6 +53,7 @@ public class MemberServiceImpl implements MemberService {
         final MemberEntity memberEntity = MemberEntity.builder()
                 .user(user)
                 .event(event)
+                .status(MemberStatus.WAIT_PRIVATE_MESSAGE)
                 .build();
         return memberRepository.save(memberEntity);
     }

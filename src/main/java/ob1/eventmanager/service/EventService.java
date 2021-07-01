@@ -34,4 +34,6 @@ public interface EventService {
 
     void delete(EventEntity event);
 
+    List<EventEntity> getAllEvents();
+
 }

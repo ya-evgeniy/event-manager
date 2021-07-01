@@ -131,6 +131,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    public void kickUser(int userId, String chatId) {
+        send(new KickChatMember(chatId, userId));
+    }
+
     public void send(KickChatMember kick) {
         try {
             execute(kick);

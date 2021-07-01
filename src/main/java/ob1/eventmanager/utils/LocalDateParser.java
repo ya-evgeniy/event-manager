@@ -30,11 +30,13 @@ public class LocalDateParser {
         monthByName.put("нвар", Month.JANUARY);
         monthByName.put("ервал", Month.FEBRUARY);
         monthByName.put("ар", Month.MARCH);
+        monthByName.put("арт", Month.MARCH);
         monthByName.put("прел", Month.APRIL);
         monthByName.put("а", Month.MAY);
         monthByName.put("юн", Month.JUNE);
         monthByName.put("юл", Month.JULY);
         monthByName.put("вгус", Month.AUGUST);
+        monthByName.put("вгуст", Month.AUGUST);
         monthByName.put("ентябр", Month.SEPTEMBER);
         monthByName.put("ктябр", Month.NOVEMBER);
         monthByName.put("оябр", Month.OCTOBER);
