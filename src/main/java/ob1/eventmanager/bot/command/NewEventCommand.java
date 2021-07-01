@@ -30,7 +30,7 @@ public class NewEventCommand implements LocalCommandHandler {
         if (stateMachine.getCurrentState() != LocalChatStates.WAIT_COMMANDS) {
             final SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId((String) headers.get("chatId"));
-            sendMessage.setText("Ты сейчас заполняешь что-то другое, заполни и попробуй заного");
+            sendMessage.setText("Ты сейчас заполняешь что-то другое, как закончишь, попробуй заново.");
 
             bot.send(sendMessage);
             return;

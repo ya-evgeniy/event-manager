@@ -11,7 +11,6 @@ import ob1.eventmanager.service.UserService;
 import ob1.eventmanager.statemachine.MessageStateMachine;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
 import java.util.Map;
 
@@ -34,7 +33,7 @@ public class EditEventPlaceCommand implements LocalCommandHandler {
 
         if (stateMachine.getCurrentState() != LocalChatStates.WAIT_COMMANDS) {
             bot.send(
-                    "Похоже, что ты сейчас заполняешь какую-то информацию. Как закончишь, выполни команду заного.",
+                    "Похоже, что ты все еще не завершил предудыщее действие(почитай выше в чате). Как закончишь, выполни команду заново.",
                     chatId
             );
             return;
@@ -46,7 +45,7 @@ public class EditEventPlaceCommand implements LocalCommandHandler {
         final String[] commandArgs = (String[]) headers.get("commandArgs");
 
         if (commandArgs.length == 0) {
-            bot.send("Выбранное мероприятие не найдено, попробуй выбрать другое.", chatId);
+            bot.send("К сожалению, не могу найти это мероприятие...Попробуй выбрать другое.", chatId);
             return;
         }
 
@@ -56,7 +55,7 @@ public class EditEventPlaceCommand implements LocalCommandHandler {
             event = eventService.getEventById(eventId);
         }
         catch (NumberFormatException | EventNotFoundException e) {
-            bot.send("Выбранное мероприятие не найдено, попробуй выбрать другое.", chatId);
+            bot.send("К сожалению, не могу найти это мероприятие...Попробуй выбрать другое.", chatId);
             return;
         }
 

@@ -27,7 +27,7 @@ public class MemberTimeEditHandler implements MessageStateMachineHandler<LocalCh
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.MEMBER_TIME) {
-            bot.edit("Напишите время мероприятия\nПример: 16:42", chatId, messageId);
+            bot.edit("Напиши время мероприятия\nПример: 16:42", chatId, messageId);
         }
         else if (previousState == LocalChatStates.MEMBER_TIME_EDIT) {
             try {

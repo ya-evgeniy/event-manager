@@ -27,7 +27,7 @@ public class EventTimeHandler implements MessageStateMachineHandler<LocalChatSta
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.EVENT_DATE) {
-            bot.send("Напишите время мероприятия\nПример: 16:42 или 16.42 или 16 42", chatId);
+            bot.send("Напиши время мероприятия\nПример: 16:42 или 16.42 или 16 42", chatId);
         }
         else if (previousState == LocalChatStates.EVENT_TIME) {
             try {

@@ -37,7 +37,7 @@ public class ManageEventsCommand implements LocalCommandHandler {
 
         if (stateMachine.getCurrentState() != LocalChatStates.WAIT_COMMANDS) {
             bot.send(
-                    "Похоже, что ты сейчас заполняешь какую-то информацию. Как закончишь, выполни команду заного.",
+                    "Похоже, что ты все еще не завершил предудыщее действие(почитай выше в чате). Как закончишь, выполни команду заново.",
                     chatId
             );
             return;
@@ -53,7 +53,7 @@ public class ManageEventsCommand implements LocalCommandHandler {
         if (ownerEvents.isEmpty()) {
             final SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(chatId);
-            sendMessage.setText("Сейчас у вас нет ни одного проходящего мероприятия.\n\nДля создания нового мероприятия, воспользуйтесь командой /new_event");
+            sendMessage.setText("Сейчас у тебя нет организованных мероприятий.\n\nДля создания нового мероприятия, воспользуйся командой /new_event");
             bot.send(sendMessage);
             return;
         }

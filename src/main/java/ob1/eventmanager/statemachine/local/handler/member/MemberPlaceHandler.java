@@ -31,7 +31,7 @@ public class MemberPlaceHandler implements MessageStateMachineHandler<LocalChatS
             final EditMessageText editMessage = new EditMessageText();
             editMessage.setChatId(chatId);
             editMessage.setMessageId(messageId);
-            editMessage.setText("Мероприятие будет проходить здесь: " + event.getPlace() + ". Устраивает ли вас место проведения?");
+            editMessage.setText("Мероприятие будет проходить здесь: " + event.getPlace() + ". Устраивает ли тебя место проведения?");
             editMessage.setReplyMarkup(KeyboardUtils.inlineOf(
                     buttonOf("Устраивает", "confirm"),
                     buttonOf("Не устраивает", "cancel")

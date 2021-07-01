@@ -9,6 +9,7 @@ import ob1.eventmanager.statemachine.local.LocalChatStates;
 import ob1.eventmanager.utils.ObjectsToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
 @Component("localEditEventDateHandler")
@@ -29,14 +30,13 @@ public class EditEventDateHandler implements MessageStateMachineHandler<LocalCha
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.WAIT_COMMANDS) {
-            final EditMessageText editMessageText = new EditMessageText();
-            editMessageText.setMessageId(messageId);
-            editMessageText.setChatId(chatId);
-            editMessageText.enableHtml(true);
-            editMessageText.setText(String.format("Введите новую дату для мероприятия" +
-                    "\nПример: 25.05.2021 или 25 мая 2021 (год писать не обязательно, возьмется текущий)" +
+            final SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
+            sendMessage.enableHtml(true);
+            sendMessage.setText(String.format("Введи новую дату для мероприятия" +
+                    "\nПример: 25.05.2021 или 25 мая 2021 (год писать не обязательно, по умолчанию используется текущий год)" +
                     "\n<b>Текущая дата:</b> %s", ObjectsToString.date(event.getDate())));
-            bot.send(editMessageText);
+            bot.send(sendMessage);
         } else if (previousState == LocalChatStates.EDIT_EVENT_DATE) {
 
             event = eventService.setEventDate(event, text);

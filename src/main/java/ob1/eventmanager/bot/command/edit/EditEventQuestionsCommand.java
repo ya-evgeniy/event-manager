@@ -22,7 +22,7 @@ public class EditEventQuestionsCommand implements LocalCommandHandler {
 
         if (stateMachine.getCurrentState() != LocalChatStates.WAIT_COMMANDS) {
             bot.send(
-                    "Похоже, что ты сейчас заполняешь какую-то информацию. Как закончишь, выполни команду заного.",
+                    "Похоже, что ты все еще не завершил предудыщее действие(почитай выше в чате). Как закончишь, выполни команду заново.",
                     chatId
             );
             return;

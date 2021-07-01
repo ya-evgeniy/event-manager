@@ -27,7 +27,7 @@ public class EventDateHandler implements MessageStateMachineHandler<LocalChatSta
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.EVENT_PLACE) {
-            bot.send("Напишите дату мероприятия" +
+            bot.send("Напиши дату мероприятия" +
                     "\nПример: 25.05.2021 или 25 мая 2021 (год писать не обязательно, возьмется текущий)", chatId);
         }
         else if (previousState == LocalChatStates.EVENT_DATE) {

@@ -9,7 +9,7 @@ import ob1.eventmanager.statemachine.local.LocalChatStates;
 import ob1.eventmanager.utils.ObjectsToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Component("localEditEventTimeHandler")
 public class EditEventTimeHandler implements MessageStateMachineHandler<LocalChatStates> {
@@ -29,14 +29,13 @@ public class EditEventTimeHandler implements MessageStateMachineHandler<LocalCha
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.WAIT_COMMANDS) {
-            final EditMessageText editMessageText = new EditMessageText();
-            editMessageText.setMessageId(messageId);
-            editMessageText.setChatId(chatId);
-            editMessageText.enableHtml(true);
-            editMessageText.setText(String.format("Введите новое время для мероприятия" +
+            final SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
+            sendMessage.enableHtml(true);
+            sendMessage.setText(String.format("Введи новое время для мероприятия" +
                     "\nПример: 16:42" +
                     "\n<b>Текущее время:</b> %s", ObjectsToString.time(event.getTime())));
-            bot.send(editMessageText);
+            bot.send(sendMessage);
         } else if (previousState == LocalChatStates.EDIT_EVENT_TIME) {
 
             event = eventService.setEventTime(event, text);

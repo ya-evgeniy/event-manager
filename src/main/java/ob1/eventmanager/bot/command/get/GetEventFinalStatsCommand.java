@@ -41,7 +41,7 @@ public class GetEventFinalStatsCommand implements LocalCommandHandler {
 
         if (stateMachine.getCurrentState() != LocalChatStates.WAIT_COMMANDS) {
             bot.send(
-                    "Похоже, что ты сейчас заполняешь какую-то информацию. Как закончишь, выполни команду заного.",
+                    "Похоже, что ты все еще не завершил предудыщее действие(почитай выше в чате). Как закончишь, выполни команду заново.",
                     chatId
             );
             return;
@@ -52,7 +52,7 @@ public class GetEventFinalStatsCommand implements LocalCommandHandler {
         final String[] commandArgs = (String[]) headers.get("commandArgs");
 
         if (commandArgs.length == 0) {
-            bot.send("Выбранное мероприятие не найдено, попробуй выбрать другое.", chatId);
+            bot.send("К сожалению, не могу найти это мероприятие...Попробуй выбрать другое.", chatId);
             return;
         }
 
@@ -62,7 +62,7 @@ public class GetEventFinalStatsCommand implements LocalCommandHandler {
             event = eventService.getEventById(eventId);
         }
         catch (NumberFormatException | EventNotFoundException e) {
-            bot.send("Выбранное мероприятие не найдено, попробуй выбрать другое.", chatId);
+            bot.send("К сожалению, не могу найти это мероприятие...Попробуй выбрать другое.", chatId);
             return;
         }
 
@@ -122,13 +122,13 @@ public class GetEventFinalStatsCommand implements LocalCommandHandler {
             }
             catch (IOException e) {
                 e.printStackTrace();
-                bot.send("Во время формирования статистики, произошла ошибка. Попробуй сформировать ее попозже.", chatId);
+                bot.send("Упс! Что-то пошло не так во время формирования статистики. Попробуй сформировать ее позже.", chatId);
             }
 
         }
         catch (IOException e) {
             e.printStackTrace();
-            bot.send("Во время формирования статистики, произошла ошибка. Попробуй сформировать ее попозже.", chatId);
+            bot.send("Упс! Что-то пошло не так во время формирования статистики. Попробуй сформировать ее позже.", chatId);
         }
 
     }

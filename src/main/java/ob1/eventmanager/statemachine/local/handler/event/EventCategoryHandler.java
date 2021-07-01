@@ -12,7 +12,6 @@ import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 
@@ -32,12 +31,12 @@ public class EventCategoryHandler implements MessageStateMachineHandler<LocalCha
     public void handle(MessageStateMachineContext<LocalChatStates> context) {
         EventEntity event = context.get("event");
         final String chatId = context.get("chatId");
-        final EditMessageText editMessage = new EditMessageText();
+        final SendMessage sendMessage1 = new SendMessage();
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.EVENT_TIME) {
             final SendMessage sendMessage = new SendMessage();
-            sendMessage.setText("Выберите категорию, к которой относится ваше мероприятие:");
+            sendMessage.setText("Выбери категорию, к которой относится ваше мероприятие:");
             sendMessage.setChatId(chatId);
             InlineKeyboardMarkup categoryKeyboardMarkup = new CategoryButtonBuilder().buildCategoryButtons(categoryService.getCategories());
             sendMessage.setReplyMarkup(categoryKeyboardMarkup);
@@ -49,19 +48,17 @@ public class EventCategoryHandler implements MessageStateMachineHandler<LocalCha
                 context.getHeaders().put("event", event);
                 context.setNextState(LocalChatStates.EVENT_TEMPLATE);
             } catch (CategoryNotFoundException e) {
-                editMessage.setMessageId(context.get("messageId"));
-                editMessage.setChatId(chatId);
-                editMessage.setText("Такой категории нет, выбери другую");
-                bot.send(editMessage);
+                sendMessage1.setChatId(chatId);
+                sendMessage1.setText("Такой категории нет, выбери другую");
+                bot.send(sendMessage1);
             }
 
         } else if (previousState == LocalChatStates.EVENT_TEMPLATE) {
-            editMessage.setText("Выберите категорию, к которой относится ваше мероприятие:");
-            editMessage.setChatId(chatId);
-            editMessage.setMessageId(context.get("messageId"));
+            sendMessage1.setText("Выбери категорию, к которой относится ваше мероприятие:");
+            sendMessage1.setChatId(chatId);
             InlineKeyboardMarkup categoryKeyboardMarkup = new CategoryButtonBuilder().buildCategoryButtons(categoryService.getCategories());
-            editMessage.setReplyMarkup(categoryKeyboardMarkup);
-            bot.send(editMessage);
+            sendMessage1.setReplyMarkup(categoryKeyboardMarkup);
+            bot.send(sendMessage1);
         } else {
             throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());
         }

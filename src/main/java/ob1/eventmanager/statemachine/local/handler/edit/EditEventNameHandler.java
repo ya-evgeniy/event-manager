@@ -8,7 +8,7 @@ import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Component("localEditEventNameHandler")
 public class EditEventNameHandler implements MessageStateMachineHandler<LocalChatStates> {
@@ -28,12 +28,11 @@ public class EditEventNameHandler implements MessageStateMachineHandler<LocalCha
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.WAIT_COMMANDS) {
-            final EditMessageText editMessageText = new EditMessageText();
-            editMessageText.setMessageId(messageId);
-            editMessageText.setChatId(chatId);
-            editMessageText.setText(String.format("Напишите новое название для мероприятия" +
+            final SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
+            sendMessage.setText(String.format("Напиши новое название для мероприятия" +
                     "\nТекущее название: %s", event.getName()));
-            bot.send(editMessageText);
+            bot.send(sendMessage);
         } else if (previousState == LocalChatStates.EDIT_EVENT_NAME) {
 
             event = eventService.setEventName(event, text);

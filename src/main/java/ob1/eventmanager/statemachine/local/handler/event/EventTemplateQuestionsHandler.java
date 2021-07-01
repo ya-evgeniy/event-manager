@@ -10,7 +10,7 @@ import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -66,18 +66,17 @@ public class EventTemplateQuestionsHandler implements MessageStateMachineHandler
 
             inlineKeyboardMarkup.setKeyboard(inlineButtons);
 
-            final EditMessageText editMessage = new EditMessageText();
-            editMessage.setText("Выберите ответ:");
-            editMessage.setChatId(chatId);
-            editMessage.setMessageId(context.get("messageId"));
+            final SendMessage sendMessage = new SendMessage();
+            sendMessage.setText("Выберите ответ:");
+            sendMessage.setChatId(chatId);
             StringBuilder str = new StringBuilder();
             str.append("Вопросы:");
             for (TemplateQuestionEntity question : event.getTemplate().getQuestions()) {
                 str.append("\n").append(question.getQuestion());
             }
-            editMessage.setText(str.toString());
-            editMessage.setReplyMarkup(inlineKeyboardMarkup);
-            bot.send(editMessage);
+            sendMessage.setText(str.toString());
+            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+            bot.send(sendMessage);
         } else if (previousState == LocalChatStates.EVENT_TEMPLATE_QUESTION) {
             final String callbackData = context.get("callbackData");
             if (callbackData.equals("cancel")) {

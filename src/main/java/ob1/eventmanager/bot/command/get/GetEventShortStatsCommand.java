@@ -41,7 +41,7 @@ public class GetEventShortStatsCommand implements LocalCommandHandler {
 
         if (stateMachine.getCurrentState() != LocalChatStates.WAIT_COMMANDS) {
             bot.send(
-                    "Похоже, что ты сейчас заполняешь какую-то информацию. Как закончишь, выполни команду заного.",
+                    "Похоже, что ты все еще не завершил предудыщее действие(почитай выше в чате). Как закончишь, выполни команду заново.",
                     chatId
             );
             return;
@@ -52,7 +52,7 @@ public class GetEventShortStatsCommand implements LocalCommandHandler {
         final String[] commandArgs = (String[]) headers.get("commandArgs");
 
         if (commandArgs.length == 0) {
-            bot.send("Выбранное мероприятие не найдено, попробуй выбрать другое.", chatId);
+            bot.send("К сожалению, не могу найти это мероприятие...Попробуй выбрать другое.", chatId);
             return;
         }
 
@@ -62,7 +62,7 @@ public class GetEventShortStatsCommand implements LocalCommandHandler {
             event = eventService.getEventById(eventId);
         }
         catch (NumberFormatException | EventNotFoundException e) {
-            bot.send("Выбранное мероприятие не найдено, попробуй выбрать другое.", chatId);
+            bot.send("К сожалению, не могу найти это мероприятие...Попробуй выбрать другое.", chatId);
             return;
         }
 

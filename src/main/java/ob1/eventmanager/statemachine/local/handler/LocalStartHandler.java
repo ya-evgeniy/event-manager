@@ -19,7 +19,7 @@ public class LocalStartHandler implements MessageStateMachineHandler<LocalChatSt
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == null) {
-            bot.send("Привет! Я ваш личный менеджер мероприятий.\n Мои основные задачи:\n " +
+            bot.send("Привет! Я твой личный менеджер мероприятий.\n Мои основные задачи:\n " +
                             "- хранить данные о вашем мероприятии;\n" +
                             "- собирать статистику о предпочтениях гостей;\n" +
                             "- напоминать о предстоящем событии\n" +
