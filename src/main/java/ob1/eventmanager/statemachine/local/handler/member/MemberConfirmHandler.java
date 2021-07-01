@@ -10,6 +10,7 @@ import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
 import ob1.eventmanager.utils.KeyboardUtils;
+import ob1.eventmanager.utils.ObjectsToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.KickChatMember;
@@ -105,7 +106,8 @@ public class MemberConfirmHandler implements MessageStateMachineHandler<LocalCha
         final StringBuilder builder = new StringBuilder();
         builder.append("Название: ").append(event.getName()).append("\n");
         builder.append("Место: ").append(event.getPlace()).append("\n");
-        builder.append("Время: ").append(event.getDate()).append("\n\n");
+        builder.append("Дата: ").append(ObjectsToString.date(event.getDate())).append("\n");
+        builder.append("Время: ").append(ObjectsToString.time(event.getTime())).append("\n\n");
         builder.append("Вопросы: ");
 
         for (EventQuestionEntity question : event.getQuestions()) {

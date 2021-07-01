@@ -12,6 +12,7 @@ import ob1.eventmanager.service.UserService;
 import ob1.eventmanager.statemachine.MessageStateMachine;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
 import ob1.eventmanager.utils.MemberStatus;
+import ob1.eventmanager.utils.ObjectsToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -136,8 +137,8 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
         String builder =
                 "Название: " + selectedEvent.getName() + "\n" +
                 "Место: " + selectedEvent.getPlace() + "\n" +
-                "Время: " + selectedEvent.getDate() + "\n\n" +
-                "Для участия в мероприятии, заполни анкету у меня в ЛС";
+                "Дата: " + ObjectsToString.date(selectedEvent.getDate()) + "\n" +
+                "Время: " + ObjectsToString.time(selectedEvent.getTime());
 
         final Message sentMessage = bot.send(builder, chatIdString);
         bot.pinMessage(chatIdString, sentMessage);

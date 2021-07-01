@@ -31,7 +31,7 @@ public class MemberDateHandler implements MessageStateMachineHandler<LocalChatSt
             final EditMessageText editMessage = new EditMessageText();
             editMessage.setChatId(chatId);
             editMessage.setMessageId(messageId);
-            editMessage.setText(String.format("Мероприятие начнется %s", event.getDate()));
+            editMessage.setText(String.format("Мероприятие начнется %s", ObjectsToString.date(event.getDate())));
 
             editMessage.setReplyMarkup(KeyboardUtils.inlineOf(
                     KeyboardUtils.buttonOf("Устраивает", "success"),
