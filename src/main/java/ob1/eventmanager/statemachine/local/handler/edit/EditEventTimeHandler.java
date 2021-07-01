@@ -28,7 +28,7 @@ public class EditEventTimeHandler implements MessageStateMachineHandler<LocalCha
         final int messageId = context.get("messageId");
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.EDIT_EVENT_DATE) {
+        if (previousState == LocalChatStates.WAIT_COMMANDS) {
             final EditMessageText editMessageText = new EditMessageText();
             editMessageText.setMessageId(messageId);
             editMessageText.setChatId(chatId);
