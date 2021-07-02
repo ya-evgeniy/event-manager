@@ -38,10 +38,15 @@ public class CheckActualEventsHandler implements MessageStateMachineHandler<Loca
 
         final Set<EventEntity> actualEvents = memberService.getActualEventsByTelegramId(userId).stream()
                 .filter(event -> {
-                    final MemberEntity member = memberService.getMember(user, event);
-                    return member.getStatus() != MemberStatus.WAIT_PRIVATE_MESSAGE
-                            && member.getStatus() != MemberStatus.LEAVE
-                            && member.getStatus() != MemberStatus.CANCEL;
+                    try {
+                        final MemberEntity member = memberService.getMember(user, event);
+                        return member.getStatus() != MemberStatus.WAIT_PRIVATE_MESSAGE
+                                && member.getStatus() != MemberStatus.LEAVE
+                                && member.getStatus() != MemberStatus.CANCEL;
+                    }
+                    catch (Exception e) {
+                        return false;
+                    }
                 })
                 .collect(Collectors.toSet());
 

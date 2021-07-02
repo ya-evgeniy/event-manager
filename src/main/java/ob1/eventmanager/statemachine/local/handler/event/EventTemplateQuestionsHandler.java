@@ -11,6 +11,7 @@ import ob1.eventmanager.statemachine.local.LocalChatStates;
 import ob1.eventmanager.utils.KeyboardUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -39,10 +40,10 @@ public class EventTemplateQuestionsHandler implements MessageStateMachineHandler
         final LocalChatStates previousState = context.getPreviousState();
 
         if (previousState == LocalChatStates.EVENT_TEMPLATE) {
-            final EditMessageText editMessage = new EditMessageText();
+            final SendMessage editMessage = new SendMessage();
             editMessage.setText("Выберите ответ:");
             editMessage.setChatId(chatId);
-            editMessage.setMessageId(context.get("messageId"));
+//            editMessage.setMessageId(context.get("messageId"));
             StringBuilder str = new StringBuilder();
             str.append("Вопросы:");
             for (TemplateQuestionEntity question : event.getTemplate().getQuestions()) {
@@ -51,8 +52,9 @@ public class EventTemplateQuestionsHandler implements MessageStateMachineHandler
             editMessage.setText(str.toString());
             editMessage.setReplyMarkup(KeyboardUtils.inlineOf(
                     KeyboardUtils.buttonOf("Устраивают", "success"),
-                    KeyboardUtils.buttonOf("Не устраивают", "cancel"),
-                    KeyboardUtils.buttonOf("Хочу изменить шаблон", "edit")));
+                    KeyboardUtils.buttonOf("Не устраивают", "cancel")//,
+//                    KeyboardUtils.buttonOf("Хочу изменить шаблон", "edit")
+            ));
             bot.send(editMessage);
         } else if (previousState == LocalChatStates.EVENT_TEMPLATE_QUESTION) {
             final String callbackData = context.get("callbackData");

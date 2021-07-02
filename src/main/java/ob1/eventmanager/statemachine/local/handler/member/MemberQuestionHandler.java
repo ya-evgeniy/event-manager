@@ -98,9 +98,9 @@ public class MemberQuestionHandler implements MessageStateMachineHandler<LocalCh
         member = memberService.setCurrentQuestion(member, unansweredQuestion);
         context.getHeaders().put("member", member);
 
-        final EditMessageText editMessage = new EditMessageText();
+        final SendMessage editMessage = new SendMessage();
         editMessage.setChatId(chatId);
-        editMessage.setMessageId(messageId);
+//        editMessage.setMessageId(messageId);
         editMessage.setText(unansweredQuestion.getQuestion());
 
         final List<List<InlineKeyboardButton>> keyboard = unansweredQuestion.getAnswers().stream()

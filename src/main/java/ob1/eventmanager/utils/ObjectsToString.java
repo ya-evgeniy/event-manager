@@ -58,7 +58,8 @@ public class ObjectsToString {
 
         if (event.getChatId() == null) {
             messageTextBuilder.append("\n\n").append("<b>Статус: Ожидает добавления в групповой чат");
-            messageTextBuilder.append("\n").append("Если нужна помощь с добавлением бота в чат, воспользуйся командой</b> /help_invite");
+            messageTextBuilder.append("\n").append("Не забудь мне дать права администратора</b>");
+//            messageTextBuilder.append("\n").append("Если нужна помощь с добавлением бота в чат, воспользуйся командой</b> /help_invite");
         }
         else {
             messageTextBuilder.append("\n\n").append("Статус: Добавлен в групповой чат");

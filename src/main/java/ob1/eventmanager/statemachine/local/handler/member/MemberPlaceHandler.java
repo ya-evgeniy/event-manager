@@ -8,6 +8,7 @@ import ob1.eventmanager.statemachine.local.LocalChatStates;
 import ob1.eventmanager.utils.KeyboardUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
 import java.util.Objects;
@@ -30,9 +31,9 @@ public class MemberPlaceHandler implements MessageStateMachineHandler<LocalChatS
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.MEMBER_INFO) {
 
-            final EditMessageText editMessage = new EditMessageText();
+            final SendMessage editMessage = new SendMessage();
             editMessage.setChatId(chatId);
-            editMessage.setMessageId(messageId);
+//            editMessage.setMessageId(messageId);
             editMessage.setText("Мероприятие будет проходить здесь: " + event.getPlace() + ". Устраивает ли тебя место проведения?");
             editMessage.setReplyMarkup(KeyboardUtils.inlineOf(
                     buttonOf("Устраивает", "confirm"),

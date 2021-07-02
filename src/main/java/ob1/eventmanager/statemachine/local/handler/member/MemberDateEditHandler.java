@@ -28,8 +28,8 @@ public class MemberDateEditHandler implements MessageStateMachineHandler<LocalCh
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.MEMBER_DATE) {
-            bot.edit("Введите дату, которая вас устраивает" +
-                    "\nПример: 25.05.2021 или 25 мая 2021 (год писать не обязательно, возьмется текущий)", chatId, messageId);
+            bot.send("Введите дату, которая вас устраивает" +
+                    "\nПример: 25.05.2021 или 25 мая 2021 (год писать не обязательно, возьмется текущий)", chatId);
         }
         else if (previousState == LocalChatStates.MEMBER_DATE_EDIT) {
             if (text == null) {

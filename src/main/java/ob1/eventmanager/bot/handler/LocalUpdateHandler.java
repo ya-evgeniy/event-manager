@@ -1,5 +1,6 @@
 package ob1.eventmanager.bot.handler;
 
+import ob1.eventmanager.bot.TelegramBot;
 import ob1.eventmanager.bot.TelegramUpdateHandler;
 import ob1.eventmanager.bot.ann.LocalCommand;
 import ob1.eventmanager.bot.command.LocalCommandHandler;
@@ -43,6 +44,9 @@ public class LocalUpdateHandler implements TelegramUpdateHandler {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private TelegramBot bot;
 
     private Map<String, LocalCommandHandler> localCommands = new HashMap<>();
 
@@ -93,6 +97,11 @@ public class LocalUpdateHandler implements TelegramUpdateHandler {
         headers.put("text", text);
 
         final MessageStateMachine<LocalChatStates> stateMachine = stateMachineService.createLocal(userEntity);
+
+        if (text == null) {
+            bot.send("Я тебя не понял, попробуй еще разок", String.valueOf(message.getChatId()));
+            return;
+        }
 
         if (text.startsWith("/")) {
             handleCommand(text.substring(1), stateMachine, headers);

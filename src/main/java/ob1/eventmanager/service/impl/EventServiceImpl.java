@@ -253,7 +253,12 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void delete(EventEntity event) {
-
+        try {
+            eventRepository.delete(event);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

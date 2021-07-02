@@ -23,6 +23,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +139,8 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
                 "Название: " + selectedEvent.getName() + "\n" +
                 "Место: " + selectedEvent.getPlace() + "\n" +
                 "Дата: " + ObjectsToString.date(selectedEvent.getDate()) + "\n" +
-                "Время: " + ObjectsToString.time(selectedEvent.getTime());
+                "Время: " + ObjectsToString.time(selectedEvent.getTime()) +
+                "\n\nПишите + в чат, кто зашел в чат до меня";
 
         final Message sentMessage = bot.send(builder, chatIdString);
         bot.pinMessage(chatIdString, sentMessage);
@@ -154,8 +156,13 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
         if (optEvent.isEmpty()) return;
         final EventEntity event = optEvent.get();
 
-        final List<UserEntity> invitedUsers = message.getNewChatMembers().stream()
+        handleUserInvite(event, chatIdString, update.getMessage().getNewChatMembers());
+    }
+
+    private void handleUserInvite(EventEntity event, String chatIdString, List<User> users) {
+        final List<UserEntity> invitedUsers = users.stream()
                 .filter(user -> !user.getIsBot())
+                .filter(user -> user.getId() != event.getOwner().getTelegramId())
                 .map(user -> {
                     final Optional<UserEntity> optUserEntity = userService.getUserByTelegramId(user.getId());
                     return optUserEntity.orElseGet(() -> userService.createUser(user.getId(), user.getUserName()));
@@ -167,7 +174,7 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
                 MemberEntity member = memberService.getMember(invitedUser, event);
                 member = memberService.setStatus(member, MemberStatus.WAIT_PRIVATE_MESSAGE);
                 member = memberService.setAnnounceDate(member, null);
-                member = memberService.setAnnounceCount(member, 0);
+                member = memberService.setAnnounceCount(member, 1);
             }
             else {
                 memberService.createMember(invitedUser, event);
@@ -190,7 +197,7 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
             if (invitedUsersWithoutChat.size() == 1) {
                 final UserEntity user = invitedUsersWithoutChat.get(0);
 
-                sendMessage.setText(bot.getMarkdownMention(user) + ", приветствую тебя в чате мероприятия\\. Для участия заполни опросник у меня в ЛС");
+                sendMessage.setText(bot.getMarkdownMention(user) + ", приветствую тебя в чате мероприятия\\. Общаться тут неудобно, давай продолжим у меня в личном диалоге, я задам тебе пару вопросов\\.");
             }
             else {
                 final StringBuilder builder = new StringBuilder();
@@ -199,7 +206,7 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
                     builder.append(bot.getMarkdownMention(user)).append(", ");
                 }
 
-                builder.append("приветствую вас в чате мероприятия. Для участия заполните опросник у меня в ЛС");
+                builder.append("приветствую вас в чате мероприятия\\. Общаться в групповом чате неудобно, давайте продолжим у меня в личном диалоге, я задам вам пару вопросов\\.");
                 sendMessage.setText(builder.toString());
             }
 
@@ -214,13 +221,21 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
         for (UserEntity user : invitedUsersWithChat) {
             final MessageStateMachine<LocalChatStates> stateMachine = stateMachineService.createLocal(user);
             if (stateMachine.getCurrentState() == LocalChatStates.WAIT_COMMANDS) {
-                stateMachine.setCurrentState(LocalChatStates.CHECK_ACTUAL_EVENTS);
-
-                final Map<String, Object> headers = new HashMap<>();
-                headers.put("userId", user.getTelegramId());
-                headers.put("chatId", String.valueOf(user.getChatId()));
-
-                stateMachine.handle(headers);
+                try {
+                    final MemberEntity member = memberService.getMember(user, event);
+                    memberService.setStatus(member, MemberStatus.FILL_QUESTIONS);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+                bot.send("Привет, я заметил что ты присоеденился к мероприятию. Пиши /actual_events, выбирай мероприятие и отвечай на мои вопросы.", String.valueOf(user.getChatId()));
+//                stateMachine.setCurrentState(LocalChatStates.CHECK_ACTUAL_EVENTS);
+//
+//                final Map<String, Object> headers = new HashMap<>();
+//                headers.put("userId", user.getTelegramId());
+//                headers.put("chatId", String.valueOf(user.getChatId()));
+//
+//                stateMachine.handle(headers);
             }
         }
     }
@@ -234,7 +249,29 @@ public class GroupUpdateHandler implements TelegramUpdateHandler {
     }
 
     private void handleMessage(Update update) {
+        final Message message = update.getMessage();
+        if (message == null) return;
 
+        final User from = message.getFrom();
+        final Chat chat = message.getChat();
+        final String chatIdString = String.valueOf(chat.getId());
+
+        final Optional<EventEntity> optEvent = eventService.getGroupEvent(chat.getId());
+        if (optEvent.isEmpty()) return;
+        final EventEntity event = optEvent.get();
+
+        final Optional<UserEntity> optUserEntity = userService.getUserByTelegramId(from.getId());
+        final UserEntity user = optUserEntity.orElseGet(() -> userService.createUser(from.getId(), from.getUserName()));
+
+        if (memberService.hasMember(user, event)) {
+            final MemberEntity member = memberService.getMember(user, event);
+            if (member.getStatus() == MemberStatus.WAIT_PRIVATE_MESSAGE && member.getAnnounceCount() == 0) {
+                handleUserInvite(event, chatIdString, Collections.singletonList(from));
+            }
+        }
+        else {
+            handleUserInvite(event, chatIdString, Collections.singletonList(from));
+        }
     }
 
 }

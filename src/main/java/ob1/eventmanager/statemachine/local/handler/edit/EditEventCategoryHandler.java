@@ -58,8 +58,8 @@ public class EditEventCategoryHandler implements MessageStateMachineHandler<Loca
                 event = eventService.setEventCategory(event, callbackData);
                 context.getHeaders().put("event", event);
             } catch (CategoryNotFoundException e) {
-                EditMessageText editMessage = new EditMessageText();
-                editMessage.setMessageId(context.get("messageId"));
+                SendMessage editMessage = new SendMessage();
+//                editMessage.setMessageId(context.get("messageId"));
                 editMessage.setChatId(chatId);
                 editMessage.setText("Такой категории нет, выбери другую");
                 bot.send(editMessage);

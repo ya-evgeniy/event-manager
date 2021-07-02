@@ -25,18 +25,13 @@ public class LocalStartCommand implements LocalCommandHandler {
 
     @Override
     public void handle(MessageStateMachine<LocalChatStates> stateMachine, Map<String, Object> headers) {
+        if (stateMachine.getCurrentState() != LocalChatStates.START) {
+            return;
+        }
+
         UserEntity user = (UserEntity) headers.get("user");
         user = userService.setUserChatId(user, (long) headers.get("chatIdLong"));
         headers.put("user", user);
-
-        final Set<EventEntity> events = memberService.getActualEventsByTelegramId(user.getTelegramId());
-        for (EventEntity event : events) {
-            final MemberEntity member = memberService.getMember(user, event);
-            final MemberStatus status = member.getStatus();
-            if (status == MemberStatus.WAIT_PRIVATE_MESSAGE) {
-                memberService.setStatus(member, MemberStatus.FILL_QUESTIONS);
-            }
-        }
 
         stateMachine.handle(headers);
     }

@@ -10,7 +10,6 @@ import ob1.eventmanager.utils.ObjectsToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 
 import java.util.Objects;
 
@@ -29,17 +28,16 @@ public class MemberTimeHandler implements MessageStateMachineHandler<LocalChatSt
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.MEMBER_DATE || previousState == LocalChatStates.MEMBER_DATE_EDIT) {
-            final EditMessageText editMessage = new EditMessageText();
-            editMessage.setChatId(chatId);
-            editMessage.setMessageId(messageId);
-            editMessage.setText(String.format("Мероприятие начнется в %s", ObjectsToString.time(event.getTime())));
+            final SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
+            sendMessage.setText(String.format("Мероприятие начнется в %s", ObjectsToString.time(event.getTime())));
 
-            editMessage.setReplyMarkup(KeyboardUtils.inlineOf(
+            sendMessage.setReplyMarkup(KeyboardUtils.inlineOf(
                     KeyboardUtils.buttonOf("Устраивает", "success"),
                     KeyboardUtils.buttonOf("Не устраивает", "cancel")
             ));
 
-            bot.send(editMessage);
+            bot.send(sendMessage);
         }
         else if (previousState == LocalChatStates.MEMBER_TIME) {
             if (callbackData == null) {

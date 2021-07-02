@@ -131,7 +131,10 @@ public class GetEventShortStatsCommand implements LocalCommandHandler {
     }
 
     private void appendBaseQuestionsStats(StringBuilder builder, EventEntity event) {
-        final List<MemberEntity> members = event.getMembers();
+        final List<MemberEntity> members = event.getMembers()
+                .stream()
+                .filter(member -> member.getStatus() != MemberStatus.FILL_QUESTIONS && member.getStatus() != MemberStatus.LEAVE)
+                .collect(Collectors.toList());
 
         long place = members.stream()
                 .filter(member -> member.getComfortPlace() == null)
@@ -159,7 +162,10 @@ public class GetEventShortStatsCommand implements LocalCommandHandler {
     }
 
     private void appendQuestionsStats(StringBuilder builder, EventEntity event) {
-        final List<MemberEntity> members = event.getMembers();
+        final List<MemberEntity> members = event.getMembers()
+                .stream()
+                .filter(member -> member.getStatus() != MemberStatus.FILL_QUESTIONS && member.getStatus() != MemberStatus.LEAVE)
+                .collect(Collectors.toList());
         final List<EventQuestionEntity> questions = event.getQuestions();
 
         final long count = members.stream()

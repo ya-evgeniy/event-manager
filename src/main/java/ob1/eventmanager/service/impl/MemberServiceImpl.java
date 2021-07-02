@@ -54,6 +54,7 @@ public class MemberServiceImpl implements MemberService {
                 .user(user)
                 .event(event)
                 .status(MemberStatus.WAIT_PRIVATE_MESSAGE)
+                .announceCount(1)
                 .build();
         return memberRepository.save(memberEntity);
     }
@@ -83,7 +84,7 @@ public class MemberServiceImpl implements MemberService {
         return getEventsByTelegramId(telegramId).stream()
                 .filter(EventEntity::isVerified)
                 .filter(event -> event.getDate() != null)
-                .filter(event -> event.getDate().isAfter(now))
+//                .filter(event -> event.getDate().isAfter(now))
                 .collect(Collectors.toSet());
     }
 

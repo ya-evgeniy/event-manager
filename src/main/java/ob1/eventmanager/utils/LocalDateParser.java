@@ -46,8 +46,25 @@ public class LocalDateParser {
     public LocalDateTime parseDate(String str) {
         final Matcher dateMatcher = datePattern.matcher(str);
         if (dateMatcher.find()) {
+            final String d = dateMatcher.group("d");
+            final String m = dateMatcher.group("m");
+            String y = dateMatcher.group("y");
 
-            return null;
+            try {
+                LocalDateTime now = LocalDateTime.now();
+                if (y != null) {
+                    if (y.length() == 2) {
+                        y = "20" + y;
+                    }
+                    now = now.withYear(Integer.parseInt(y));
+                }
+                now = now.withMonth(Integer.parseInt(m));
+                now = now.withDayOfMonth(Integer.parseInt(d));
+                return now;
+            }
+            catch (Exception e) {
+                throw new IncorrectDateFormatException(str, e);
+            }
         }
 
         LocalDateTime date = LocalDateTime.now();

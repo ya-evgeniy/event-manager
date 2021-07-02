@@ -97,7 +97,7 @@ public class GetEventFinalStatsCommand implements LocalCommandHandler {
                 line.add(String.valueOf(member.getUser().getTelegramId()));
                 line.add(String.valueOf(member.getUser().getChatId()));
                 line.add(String.valueOf(member.getUser().getName()));
-                line.add(String.valueOf(member.getStatus()));
+                line.add(member.getStatus() == null ? "" : member.getStatus().getLocalized());
                 line.add(member.getComfortPlace() == null ? "" : member.getComfortPlace());
                 line.add(member.getComfortDate() == null ? "" : ObjectsToString.dateDDMMYYYY(member.getComfortDate()));
                 line.add(member.getComfortTime() == null ? "" : ObjectsToString.time(member.getComfortTime()));

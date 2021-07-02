@@ -45,15 +45,21 @@ public class PingUserScheduler {
                     .collect(Collectors.toList());
 
             members.stream()
-                    .filter(member -> member.getAnnounceCount() > 0)
+                    .filter(member -> member.getAnnounceCount() > 1)
                     .collect(Collectors.toList())
                     .forEach(member -> {
                         memberService.setStatus(member, MemberStatus.LEAVE);
                         bot.kickUser(member.getUser().getTelegramId(), chatIdStr);
+
+                        final SendMessage sendMessage = new SendMessage();
+                        sendMessage.setChatId(String.valueOf(event.getOwner().getChatId()));
+                        sendMessage.setText("Я выкинул из мероприятия " + bot.getMarkdownMention(member.getUser()) + ", так как он не хотел мне писать в личные сообщения");
+                        sendMessage.enableMarkdownV2(true);
+                        bot.send(sendMessage);
                     });
 
             final List<MemberEntity> announceMembers = members.stream()
-                    .filter(member -> member.getAnnounceCount() < 1)
+                    .filter(member -> member.getAnnounceCount() < 2)
                     .collect(Collectors.toList());
 
             if (!announceMembers.isEmpty()) {
@@ -64,7 +70,7 @@ public class PingUserScheduler {
                 if (announceMembers.size() == 1) {
                     final MemberEntity member = announceMembers.get(0);
 
-                    sendMessage.setText(bot.getMarkdownMention(member.getUser()) + ", видимо ты не расслышал, но прошу тебя, заполни опросник у меня в ЛС");
+                    sendMessage.setText(bot.getMarkdownMention(member.getUser()) + ", видимо ты не заметил моего сообщения, но прошу тебя, давай пообщаемся у меня в личном сообщении");
                 }
                 else {
                     final StringBuilder builder = new StringBuilder();
@@ -73,7 +79,7 @@ public class PingUserScheduler {
                         builder.append(bot.getMarkdownMention(member.getUser())).append(", ");
                     }
 
-                    builder.append(", видимо вы не расслышали, но прошу вас, заполните опросник у меня в ЛС");
+                    builder.append(", видимо вы не расслышали, но прошу вас, давайте пообщаемся у меня в личном сообщении");
                     sendMessage.setText(builder.toString());
                 }
 
