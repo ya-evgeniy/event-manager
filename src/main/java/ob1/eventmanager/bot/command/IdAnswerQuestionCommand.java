@@ -29,7 +29,7 @@ public class IdAnswerQuestionCommand implements LocalCommandHandler {
         final String chatId = (String) headers.get("chatId");
 
         if (stateMachine.getCurrentState() != LocalChatStates.WAIT_COMMANDS) {
-            bot.send("Ты сейчас заполняешь что-то другое, заполни и попробуй заново", chatId);
+            bot.send("Ты сейчас заполняешь что-то другое, как закончишь, попробуй заново", chatId);
             return;
         }
 
@@ -65,7 +65,7 @@ public class IdAnswerQuestionCommand implements LocalCommandHandler {
                 .anyMatch(id -> id == finalUser.getId());
 
         if (!isMember) {
-            bot.send("Кажется ты не участвуешь в мероприятии", chatId);
+            bot.send("Кажется ты не участвуешь в этом мероприятии", chatId);
             return;
         }
 

@@ -2,10 +2,13 @@ package ob1.eventmanager.statemachine.local.handler;
 
 import ob1.eventmanager.bot.TelegramBot;
 import ob1.eventmanager.entity.EventEntity;
+import ob1.eventmanager.entity.MemberEntity;
+import ob1.eventmanager.entity.UserEntity;
 import ob1.eventmanager.service.MemberService;
 import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
+import ob1.eventmanager.utils.MemberStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -31,8 +34,21 @@ public class CheckActualEventsHandler implements MessageStateMachineHandler<Loca
     @Override
     public void handle(MessageStateMachineContext<LocalChatStates> context) {
         final int userId = context.get("userId");
+        final UserEntity user = context.get("user");
 
-        final Set<EventEntity> actualEvents = memberService.getActualEventsByTelegramId(userId);
+        final Set<EventEntity> actualEvents = memberService.getActualEventsByTelegramId(userId).stream()
+                .filter(event -> {
+                    try {
+                        final MemberEntity member = memberService.getMember(user, event);
+                        return member.getStatus() != MemberStatus.WAIT_PRIVATE_MESSAGE
+                                && member.getStatus() != MemberStatus.LEAVE
+                                && member.getStatus() != MemberStatus.CANCEL;
+                    }
+                    catch (Exception e) {
+                        return false;
+                    }
+                })
+                .collect(Collectors.toSet());
 
         if (!actualEvents.isEmpty()) {
             final SendMessage sendMessage = new SendMessage();

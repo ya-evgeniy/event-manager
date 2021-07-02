@@ -30,7 +30,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation group: 'org.springframework.statemachine', name: 'spring-statemachine-core', version: '2.2.0.RELEASE'
-
+    implementation group: 'com.opencsv', name: 'opencsv', version: '5.4'
 }
 
 test {

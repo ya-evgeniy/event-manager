@@ -6,6 +6,7 @@ import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
 import ob1.eventmanager.utils.KeyboardUtils;
+import ob1.eventmanager.utils.ObjectsToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -24,13 +25,14 @@ public class MemberDateHandler implements MessageStateMachineHandler<LocalChatSt
         EventEntity event = context.get("event");
         final Integer messageId = context.get("messageId");
         final String chatId = context.get("chatId");
+        final String callbackData = context.get("callbackData");
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.MEMBER_PLACE) {
-            final EditMessageText editMessage = new EditMessageText();
+            final SendMessage editMessage = new SendMessage();
             editMessage.setChatId(chatId);
-            editMessage.setMessageId(messageId);
-            editMessage.setText(String.format("Мероприятие начнется %s", event.getDate()));
+//            editMessage.setMessageId(messageId);
+            editMessage.setText(String.format("Мероприятие начнется %s", ObjectsToString.date(event.getDate())));
 
             editMessage.setReplyMarkup(KeyboardUtils.inlineOf(
                     KeyboardUtils.buttonOf("Устраивает", "success"),
@@ -41,7 +43,7 @@ public class MemberDateHandler implements MessageStateMachineHandler<LocalChatSt
         } else if (previousState == LocalChatStates.MEMBER_PLACE_EDIT) {
             final SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(chatId);
-            sendMessage.setText(String.format("Мероприятие начнется %s", event.getDate()));
+            sendMessage.setText(String.format("Мероприятие начнется %s", ObjectsToString.date(event.getDate())));
 
             sendMessage.setReplyMarkup(KeyboardUtils.inlineOf(
                     KeyboardUtils.buttonOf("Устраивает", "success"),
@@ -50,9 +52,12 @@ public class MemberDateHandler implements MessageStateMachineHandler<LocalChatSt
 
             bot.send(sendMessage);
         } else if (previousState == LocalChatStates.MEMBER_DATE) {
-            final String callbackData = context.get("callbackData");
+            if (callbackData == null) {
+                bot.send("Выбери из того что есть", chatId);
+                return;
+            }
             if (Objects.equals(callbackData, "success")) {
-                context.setNextState(LocalChatStates.MEMBER_QUESTION);
+                context.setNextState(LocalChatStates.MEMBER_TIME);
             }
             else if (Objects.equals(callbackData, "cancel")) {
                 context.setNextState(LocalChatStates.MEMBER_DATE_EDIT);

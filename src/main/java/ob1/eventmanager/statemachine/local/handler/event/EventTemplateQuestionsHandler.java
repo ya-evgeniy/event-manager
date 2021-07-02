@@ -8,8 +8,10 @@ import ob1.eventmanager.service.TemplateService;
 import ob1.eventmanager.statemachine.MessageStateMachineContext;
 import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
+import ob1.eventmanager.utils.KeyboardUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -38,45 +40,21 @@ public class EventTemplateQuestionsHandler implements MessageStateMachineHandler
         final LocalChatStates previousState = context.getPreviousState();
 
         if (previousState == LocalChatStates.EVENT_TEMPLATE) {
-            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-            List<List<InlineKeyboardButton>> inlineButtons = new ArrayList<>();//fixme кнопки по нормальному сделать
-
-            List<InlineKeyboardButton> inlineKeyboardButtonList1 = new ArrayList<>();
-            InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-            inlineKeyboardButton1.setText("Не устраивают");
-            inlineKeyboardButton1.setCallbackData("cancel");
-
-            List<InlineKeyboardButton> inlineKeyboardButtonList2 = new ArrayList<>();
-            InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-            inlineKeyboardButton2.setText("Устраивают");
-            inlineKeyboardButton2.setCallbackData("success");
-
-            List<InlineKeyboardButton> inlineKeyboardButtonList3 = new ArrayList<>();
-            InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
-            inlineKeyboardButton3.setText("Хочу изменить шаблон");
-            inlineKeyboardButton3.setCallbackData("edit");
-
-            inlineKeyboardButtonList1.add(inlineKeyboardButton1);
-            inlineKeyboardButtonList2.add(inlineKeyboardButton2);
-            inlineKeyboardButtonList3.add(inlineKeyboardButton3);
-
-            inlineButtons.add(inlineKeyboardButtonList1);
-            inlineButtons.add(inlineKeyboardButtonList2);
-            inlineButtons.add(inlineKeyboardButtonList3);
-
-            inlineKeyboardMarkup.setKeyboard(inlineButtons);
-
-            final EditMessageText editMessage = new EditMessageText();
+            final SendMessage editMessage = new SendMessage();
             editMessage.setText("Выберите ответ:");
             editMessage.setChatId(chatId);
-            editMessage.setMessageId(context.get("messageId"));
+//            editMessage.setMessageId(context.get("messageId"));
             StringBuilder str = new StringBuilder();
             str.append("Вопросы:");
             for (TemplateQuestionEntity question : event.getTemplate().getQuestions()) {
                 str.append("\n").append(question.getQuestion());
             }
             editMessage.setText(str.toString());
-            editMessage.setReplyMarkup(inlineKeyboardMarkup);
+            editMessage.setReplyMarkup(KeyboardUtils.inlineOf(
+                    KeyboardUtils.buttonOf("Устраивают", "success"),
+                    KeyboardUtils.buttonOf("Не устраивают", "cancel")//,
+//                    KeyboardUtils.buttonOf("Хочу изменить шаблон", "edit")
+            ));
             bot.send(editMessage);
         } else if (previousState == LocalChatStates.EVENT_TEMPLATE_QUESTION) {
             final String callbackData = context.get("callbackData");

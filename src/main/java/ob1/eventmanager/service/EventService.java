@@ -22,6 +22,8 @@ public interface EventService {
 
     EventEntity setEventDate(EventEntity event, String date);
 
+    EventEntity setEventTime(EventEntity event, String time);
+
     EventEntity setEventPlace(EventEntity event, String place);
 
     EventEntity setEventCategory(EventEntity event, String category);
@@ -31,5 +33,7 @@ public interface EventService {
     EventEntity verifyEvent(EventEntity event);
 
     void delete(EventEntity event);
+
+    List<EventEntity> getAllEvents();
 
 }

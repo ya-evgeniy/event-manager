@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ob1.eventmanager.utils.MemberStatus;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -42,9 +44,14 @@ public class MemberEntity {
 
     private LocalDateTime comfortDate;
 
+    private LocalDateTime comfortTime;
+
     private LocalDateTime announceDate;
 
     private int announceCount;
+
+    @Column(nullable = false)
+    private MemberStatus status = MemberStatus.WAIT_PRIVATE_MESSAGE;
 
     @ManyToOne
     @JoinColumn(name = "current_question", nullable = true)

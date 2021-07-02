@@ -27,16 +27,30 @@ public class NewEventCommand implements LocalCommandHandler {
 
     @Override
     public void handle(MessageStateMachine<LocalChatStates> stateMachine, Map<String, Object> headers) {
-        if (stateMachine.getCurrentState() != LocalChatStates.WAIT_COMMANDS) {
+        UserEntity userEntity = (UserEntity) headers.get("user");
+
+        boolean pass = false;
+        if (stateMachine.getCurrentState().ordinal() >= LocalChatStates.EVENT_NAME.ordinal()
+                    && stateMachine.getCurrentState().ordinal() <= LocalChatStates.EVENT_CONFIRM.ordinal()) {
+            final EventEntity selectedEvent = userEntity.getSelectedEvent();
+            if (selectedEvent != null) {
+                userEntity = userService.setUserSelectedEvent(userEntity, null);
+                headers.put("user", userEntity);
+
+                eventService.delete(selectedEvent);
+            }
+            pass = true;
+        }
+
+        if (!pass && stateMachine.getCurrentState() != LocalChatStates.WAIT_COMMANDS) {
             final SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId((String) headers.get("chatId"));
-            sendMessage.setText("Ты сейчас заполняешь что-то другое, заполни и попробуй заного");
+            sendMessage.setText("Ты сейчас заполняешь что-то другое, как закончишь, попробуй заново.");
 
             bot.send(sendMessage);
             return;
         }
 
-        UserEntity userEntity = (UserEntity) headers.get("user");
         final EventEntity event = eventService.newEvent(
                 userEntity,
                 (long) headers.get("chatIdLong")
@@ -49,6 +63,7 @@ public class NewEventCommand implements LocalCommandHandler {
         );
         headers.put("user", userEntity);
 
+        stateMachine.setPreviousState(LocalChatStates.WAIT_COMMANDS);
         stateMachine.setCurrentState(LocalChatStates.EVENT_CREATE);
         stateMachine.handle(headers);
     }

@@ -14,7 +14,7 @@ import ob1.eventmanager.statemachine.MessageStateMachineHandler;
 import ob1.eventmanager.statemachine.local.LocalChatStates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.util.List;
@@ -49,17 +49,15 @@ public class EventTemplateHandler implements MessageStateMachineHandler<LocalCha
         if (previousState == LocalChatStates.EVENT_CATEGORY || previousState == LocalChatStates.EVENT_TEMPLATE_QUESTION) {
             final CategoryEntity category = event.getCategory();
 
-            final EditMessageText editMessage = new EditMessageText();
-            editMessage.setMessageId(messageId);
-            editMessage.setChatId(chatId);
-
-            editMessage.setText("Выберите шаблон:");
+            final SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
+            sendMessage.setText("Выбери шаблон:");
 
             List<TemplateEntity> templateEntities = category.getTemplates();
             InlineKeyboardMarkup templateKeyboardMarkup = new TemplateButtonBuilder().buildTemplateButtons(templateEntities);
-            editMessage.setReplyMarkup(templateKeyboardMarkup);
+            sendMessage.setReplyMarkup(templateKeyboardMarkup);
 
-            bot.send(editMessage);
+            bot.send(sendMessage);
         } else if (previousState == LocalChatStates.EVENT_TEMPLATE) {
 
             if (Objects.equals(text, "goBackToCategory") || Objects.equals(callbackQuery, "goBackToCategory")) {
@@ -75,11 +73,10 @@ public class EventTemplateHandler implements MessageStateMachineHandler<LocalCha
 
                     context.setNextState(LocalChatStates.EVENT_TEMPLATE_QUESTION);
                 } catch (TemplateNotFoundException e) {
-                    final EditMessageText editMessage = new EditMessageText();
-                    editMessage.setMessageId(messageId);
-                    editMessage.setChatId(chatId);
-                    editMessage.setText("К сожалению, не могу найти подходящий шаблон в базе. Вы можете выбрать другой.");
-                    bot.send(editMessage);
+                    final SendMessage sendMessage = new SendMessage();
+                    sendMessage.setChatId(chatId);
+                    sendMessage.setText("К сожалению, не могу найти подходящий шаблон в базе. Попробуй выбрать другой.");
+                    bot.send(sendMessage);
                 }
             }
 
@@ -94,11 +91,10 @@ public class EventTemplateHandler implements MessageStateMachineHandler<LocalCha
 
                     context.setNextState(LocalChatStates.EVENT_TEMPLATE_QUESTION);
                 } catch (TemplateNotFoundException e) {
-                    final EditMessageText editMessage = new EditMessageText();
-                    editMessage.setMessageId(messageId);
-                    editMessage.setChatId(chatId);
-                    editMessage.setText("К сожалению, не могу найти подходящий шаблон в базе. Вы можете выбрать другой.");
-                    bot.send(editMessage);
+                    final SendMessage sendMessage = new SendMessage();
+                    sendMessage.setChatId(chatId);
+                    sendMessage.setText("К сожалению, не могу найти подходящий шаблон в базе. Попробуй выбрать другой.");
+                    bot.send(sendMessage);
                 }
             }
         } else {

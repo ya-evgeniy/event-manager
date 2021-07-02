@@ -34,7 +34,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity setUserSelectedEvent(UserEntity user, EventEntity event) {
-        System.out.println("SETTING SELECTED EVENT " + event.getId());
         final UserEntity userEntity = UserEntity.builder()
                 .id(user.getId())
                 .telegramId(user.getTelegramId())

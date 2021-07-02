@@ -8,7 +8,10 @@ import ob1.eventmanager.statemachine.local.LocalChatStates;
 import ob1.eventmanager.utils.KeyboardUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+
+import java.util.Objects;
 
 import static ob1.eventmanager.utils.KeyboardUtils.buttonOf;
 
@@ -28,10 +31,10 @@ public class MemberPlaceHandler implements MessageStateMachineHandler<LocalChatS
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.MEMBER_INFO) {
 
-            final EditMessageText editMessage = new EditMessageText();
+            final SendMessage editMessage = new SendMessage();
             editMessage.setChatId(chatId);
-            editMessage.setMessageId(messageId);
-            editMessage.setText("Мероприятие будет проходить здесь: " + event.getPlace() + ". Устраивает ли вас место проведения?");
+//            editMessage.setMessageId(messageId);
+            editMessage.setText("Мероприятие будет проходить здесь: " + event.getPlace() + ". Устраивает ли тебя место проведения?");
             editMessage.setReplyMarkup(KeyboardUtils.inlineOf(
                     buttonOf("Устраивает", "confirm"),
                     buttonOf("Не устраивает", "cancel")
@@ -39,10 +42,14 @@ public class MemberPlaceHandler implements MessageStateMachineHandler<LocalChatS
             bot.send(editMessage);
 
         } else if (previousState == LocalChatStates.MEMBER_PLACE) {
-            if (callbackQuery.equals("confirm")) {
+            if (callbackQuery == null) {
+                bot.send("Выбери из того что есть", chatId);
+                return;
+            }
+            if (Objects.equals(callbackQuery, "confirm")) {
                 context.setNextState(LocalChatStates.MEMBER_DATE);
             }
-            else if (callbackQuery.equals("cancel")) {
+            else if (Objects.equals(callbackQuery, "cancel")) {
                 context.setNextState(LocalChatStates.MEMBER_PLACE_EDIT);
             }
             else {

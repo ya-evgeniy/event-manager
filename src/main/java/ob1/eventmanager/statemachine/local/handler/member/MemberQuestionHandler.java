@@ -48,7 +48,7 @@ public class MemberQuestionHandler implements MessageStateMachineHandler<LocalCh
         MemberEntity member = context.get("member");
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.MEMBER_DATE_EDIT) {
+        if (previousState == LocalChatStates.MEMBER_TIME || previousState == LocalChatStates.MEMBER_TIME_EDIT) {
             final Optional<EventQuestionEntity> optUnansweredQuestion = eventQuestionService.getUnansweredQuestion(member);
             if (optUnansweredQuestion.isEmpty()) {
                 context.setNextState(LocalChatStates.MEMBER_CONFIRM);
@@ -98,9 +98,9 @@ public class MemberQuestionHandler implements MessageStateMachineHandler<LocalCh
         member = memberService.setCurrentQuestion(member, unansweredQuestion);
         context.getHeaders().put("member", member);
 
-        final EditMessageText editMessage = new EditMessageText();
+        final SendMessage editMessage = new SendMessage();
         editMessage.setChatId(chatId);
-        editMessage.setMessageId(messageId);
+//        editMessage.setMessageId(messageId);
         editMessage.setText(unansweredQuestion.getQuestion());
 
         final List<List<InlineKeyboardButton>> keyboard = unansweredQuestion.getAnswers().stream()

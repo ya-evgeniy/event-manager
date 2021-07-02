@@ -4,6 +4,7 @@ import ob1.eventmanager.entity.EventEntity;
 import ob1.eventmanager.entity.EventQuestionEntity;
 import ob1.eventmanager.entity.MemberEntity;
 import ob1.eventmanager.entity.UserEntity;
+import ob1.eventmanager.utils.MemberStatus;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -28,9 +29,13 @@ public interface MemberService {
 
     MemberEntity setComfortDate(MemberEntity member, String date);
 
+    MemberEntity setComfortTime(MemberEntity member, String time);
+
     MemberEntity setAnnounceDate(MemberEntity member, LocalDateTime date);
 
     MemberEntity setAnnounceCount(MemberEntity member, int count);
+
+    MemberEntity setStatus(MemberEntity member, MemberStatus status);
 
     MemberEntity setCurrentQuestion(MemberEntity member, EventQuestionEntity question);
 }

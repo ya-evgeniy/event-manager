@@ -19,7 +19,7 @@ public class EventCreateHandler implements MessageStateMachineHandler<LocalChatS
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.WAIT_COMMANDS) {
-            bot.send("О! У тебя есть классное мероприятие? Я тебе помогу создать его!", chatId);
+            bot.send("О! Неужели есть идея для мероприятия? Я с радостью помогу с его организацией :)", chatId);
             context.setNextState(LocalChatStates.EVENT_NAME);
         }
         else {

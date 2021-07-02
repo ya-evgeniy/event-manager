@@ -28,9 +28,14 @@ public class MemberDateEditHandler implements MessageStateMachineHandler<LocalCh
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.MEMBER_DATE) {
-            bot.edit("Введите дату и время, которое вас устраивает", chatId, messageId);
+            bot.send("Введите дату, которая вас устраивает" +
+                    "\nПример: 25.05.2021 или 25 мая 2021 (год писать не обязательно, возьмется текущий)", chatId);
         }
         else if (previousState == LocalChatStates.MEMBER_DATE_EDIT) {
+            if (text == null) {
+                bot.send("Напиши ответ текстом", chatId);
+                return;
+            }
             try {
                 member = memberService.setComfortDate(member, text);
                 context.getHeaders().put("member", member);
@@ -39,7 +44,7 @@ public class MemberDateEditHandler implements MessageStateMachineHandler<LocalCh
                 return;
             }
 
-            context.setNextState(LocalChatStates.MEMBER_QUESTION);
+            context.setNextState(LocalChatStates.MEMBER_TIME);
         } else {
             throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());
         }

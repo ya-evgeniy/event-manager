@@ -25,14 +25,18 @@ public class EventPlaceHandler implements MessageStateMachineHandler<LocalChatSt
         final String chatId = context.get("chatId");
 
         final LocalChatStates previousState = context.getPreviousState();
-        if (previousState == LocalChatStates.EVENT_DATE) {
+        if (previousState == LocalChatStates.EVENT_NAME) {
             bot.send("Где будет проходить меропроиятие?", chatId);
         } else if (previousState == LocalChatStates.EVENT_PLACE) {
+            if (text == null) {
+                bot.send("Напиши ответ текстом", chatId);
+                return;
+            }
             event = eventService.setEventPlace(event, text);
             context.getHeaders().put("event", event);
 
             bot.send("Так и запишем: " + text, chatId);
-            context.setNextState(LocalChatStates.EVENT_CATEGORY);
+            context.setNextState(LocalChatStates.EVENT_DATE);
         } else {
             throw new UnsupportedOperationException(previousState.name() + " -> " + context.getCurrentState());
         }

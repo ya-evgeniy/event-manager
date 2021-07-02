@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChat;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.KickChatMember;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.LeaveChat;
 import org.telegram.telegrambots.meta.api.methods.pinnedmessages.PinChatMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -130,9 +131,21 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    public void kickUser(int userId, String chatId) {
+        send(new KickChatMember(chatId, userId));
+    }
+
     public void send(KickChatMember kick) {
         try {
             execute(kick);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void send(SendDocument sendDocument) {
+        try {
+            execute(sendDocument);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

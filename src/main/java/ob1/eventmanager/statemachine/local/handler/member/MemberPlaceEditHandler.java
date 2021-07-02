@@ -28,9 +28,13 @@ public class MemberPlaceEditHandler implements MessageStateMachineHandler<LocalC
 
         final LocalChatStates previousState = context.getPreviousState();
         if (previousState == LocalChatStates.MEMBER_PLACE) {
-            bot.edit("Введите название места, которое вас устраивает", chatId, messageId);
+            bot.send("Введи название места, которое тебя устраивает", chatId);
         }
         else if (previousState == LocalChatStates.MEMBER_PLACE_EDIT) {
+            if (text == null) {
+                bot.send("Напиши ответ текстом", chatId);
+                return;
+            }
             member = memberService.setComfortPlace(member, text);
             context.getHeaders().put("member", member);
 
